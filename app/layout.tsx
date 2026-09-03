@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import { fontVars } from "./fonts";
 import { ThemeProvider, themeInitScript } from "@/lib/theme";
+import { SkipLink } from "@/components/ui/SkipLink";
+import { Nav } from "@/components/ui/Nav";
+import { Footer } from "@/components/ui/Footer";
 import "./globals.css";
+
+export const metadata: Metadata = {
+  title: { default: "BridVance", template: "%s — BridVance" },
+  description: "A studio building distinctive web front-ends and agentic automation systems.",
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,8 +17,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="min-h-screen bg-bg text-fg">
+        <ThemeProvider>
+          <SkipLink />
+          <Nav />
+          <main id="main">{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );
