@@ -139,7 +139,7 @@ Every GPU effect follows exactly one pattern so they are independently understan
 
 **Mobile rules:** one live effect at a time (the hero on Home; on Lab, tap-to-run, one open, dismissible). All pointer interactions carry touch handlers and `touch-action`. Layouts down to 320 px. Posters reserve exact dimensions → zero CLS.
 
-**Known browser gap:** `liquid-glass-js` uses SVG `feDisplacementMap` — a no-op in Firefox and inconsistent on older Safari. The `LiquidGlass` component feature-detects and falls back to `backdrop-filter: blur() saturate()`.
+**Known browser gap:** the Lab's draggable-lens demo (§6, demo 3) uses `liquid-glass-js`, which relies on SVG `feDisplacementMap` — a no-op in Firefox and inconsistent on older Safari; that demo feature-detects and shows a `backdrop-filter` panel instead. The `LiquidGlass` component (nav chrome) is pure CSS `backdrop-filter` and has no such gap — it degrades to a plain translucent bar in Firefox.
 
 ---
 
@@ -206,7 +206,7 @@ Each shows a **distinct** capability, not a variation. Each uses the §4.3 islan
 |---|---|---|---|---|
 | 1 | **Shader gradient** | `@shadergradient/react` | Shader-driven ambient visuals; controls for colour / speed / grain. Doubles as "play with the hero tech." | Poster (CSS gradient still image) |
 | 2 | **Liquid-metal logo** | port of `paper-design/liquid-logo` shader into `components/lab/LiquidLogo/` | Custom WebGL shader work on a real brand asset (the studio logo → texture); viscosity / refraction toggles | Static rendered image of the logo |
-| 3 | **Liquid-glass lens** | `liquid-glass-js` wrapped as `components/ui/LiquidGlass.tsx` | SVG displacement / DOM-level optics; drag a refracting panel over page content | `backdrop-filter` blur+saturate panel |
+| 3 | **Liquid-glass lens** | `liquid-glass-js` consumed directly in a `components/lab/` component | SVG displacement / DOM-level optics; drag a refracting panel over page content | `backdrop-filter` blur+saturate panel |
 | 4 | **Transmission glass object** | `@react-three/fiber` + `@react-three/drei` `MeshTransmissionMaterial` | Real three.js fluency — PBR transmission material, lighting, environment, drag-to-rotate | Poster (rendered still) |
 | 5 | **Image-distortion grid** | custom GLSL + R3F | Shader + pointer/touch interaction — the "agency" ripple/melt reveal, done cleanly; tap on mobile | Plain image grid, CSS hover only |
 | 6 | **Kinetic variable type** | CSS `font-variation-settings` + small JS scramble; **no WebGL** | Typography as motion; proves range beyond shaders; lowest risk | Static styled headline |
@@ -361,7 +361,7 @@ Links to this site's live Lighthouse report and a headers scan. It is positionin
 |---|---|
 | `three` leaks into the shared bundle → slow first load | `@next/bundle-analyzer` CI assertion; all R3F reached only via `next/dynamic` |
 | `shadergradient` janky on low-end phones | tier gate + runtime FPS guard + poster; hero `three` deferred past first paint |
-| `liquid-glass-js` SVG filters break cross-browser (esp. Firefox) | feature-detect; `backdrop-filter` fallback baked into `LiquidGlass` |
+| `liquid-glass-js` SVG filters / DOM-cloning misbehave (Firefox no-op; clones a structural container) | nav chrome (`LiquidGlass`) is pure CSS `backdrop-filter`, no library; `liquid-glass-js` is used only in the Lab lens demo, which feature-detects and shows a `backdrop-filter` panel where unsupported |
 | Ported `liquid-logo` shader becomes a maintenance burden | keep the port minimal, pin the reference commit in a comment, isolate in one folder |
 | Case-study content not ready at launch | preview-card art direction designed to look intentional; `/work/[slug]` deferred |
 | Logo vector (SVG) not yet supplied | raster used everywhere interim; `liquid-logo` demo + favicon marked `TODO(brand-svg)`, swapped in when the SVG lands — no structural change |
