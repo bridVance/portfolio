@@ -20,17 +20,24 @@ test("theme toggle cycles and persists", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
-test("skip link is reachable and targets #main", async ({ page }) => {
+test("skip link is reachable and targets #main", async ({ page, browserName }) => {
   await page.goto("/");
   const link = page.getByRole("link", { name: /skip to content/i });
 
   await page.keyboard.press("Tab");
-  // WebKit only tab-focuses links when the OS "Full Keyboard Access" setting is
-  // on (Chromium/Firefox always do). Where Tab lands elsewhere, fall back to
-  // programmatic focus — the link is a plain <a href> with no negative tabindex,
-  // so it is in the tab order by spec regardless.
   const reachedByTab = await link.evaluate((el) => el === document.activeElement);
-  if (!reachedByTab) await link.focus();
+
+  // Chromium & Firefox always tab-focus links, so the skip link — the first
+  // focusable node in the document — MUST be what Tab lands on. Assert that, so
+  // the tab-order guarantee stays real and a future focusable inserted ahead of
+  // it fails the test. WebKit only tab-focuses links with the OS "Full Keyboard
+  // Access" setting on, so there we fall back to programmatic focus (the link is
+  // a plain <a href> with no negative tabindex — in tab order by spec).
+  if (browserName === "webkit") {
+    if (!reachedByTab) await link.focus();
+  } else {
+    expect(reachedByTab).toBe(true);
+  }
 
   await expect(link).toBeFocused();
   await expect(link).toHaveAttribute("href", "#main");
