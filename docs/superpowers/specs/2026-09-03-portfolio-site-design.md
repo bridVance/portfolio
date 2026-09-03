@@ -262,6 +262,7 @@ Tokens on bare `:root` (light), redefined under `@media (prefers-color-scheme: d
 - **Newsreader** — reading text on Automation and Work prose. A literary body against machined headlines is the deliberate, non-templated move.
 - **JetBrains Mono** — tags, "View source", sample transcripts, section labels.
 - Modular scale ≈ 1.25 (mobile) / 1.333 (desktop). Headings `text-wrap: balance`. Uppercase labels get letter-spacing. `font-variant-numeric: tabular-nums` on any aligned figures.
+- **Role mechanism:** the global `body` default is the **display** face (Familjen Grotesk) — it covers nav, buttons, labels, form controls, and all UI chrome. **Newsreader is opt-in**: long-form prose containers (the Automation use-case bodies, Work case-study text, page ledes) add a `font-body` class; nothing else inherits serif.
 
 ### 8.3 Layout & signature
 
@@ -311,7 +312,7 @@ All third-party effect code (`liquid-glass-js`, the ported `liquid-logo` shader)
 
 ### 10.2 Accessibility (WCAG 2.2 AA)
 
-Full keyboard nav; visible amber focus ring; skip link. Contrast verified for fg/bg and accent-on-surface in both themes. `prefers-reduced-motion` honoured everywhere. Canvases `aria-hidden`; nothing meaningful conveyed only through a shader. Forms: real `<label>`s, errors tied via `aria-describedby`, no placeholder-as-label. Semantic landmarks, one `h1` per page, logical heading order. Automated axe run in E2E.
+Full keyboard nav; a visible focus ring in `--accent` (BridVance blue); skip link. Contrast verified for fg/bg and accent-on-surface in both themes. `prefers-reduced-motion` honoured everywhere. Canvases `aria-hidden`; nothing meaningful conveyed only through a shader. Forms: real `<label>`s, errors tied via `aria-describedby`, no placeholder-as-label. Semantic landmarks, one `h1` per page, logical heading order. Automated axe run in E2E.
 
 ### 10.3 Security (the site itself)
 
@@ -341,7 +342,8 @@ Links to this site's live Lighthouse report and a headers scan. It is positionin
 - **E2E (Playwright), Section 4.4 matrix** (engine + device-descriptor emulation): WebKit + iPhone descriptor, Chromium + Pixel descriptor, desktop Chromium / Firefox / WebKit, plus a throttled low-memory profile. Routes render; consult form submits (network mocked); `prefers-reduced-motion` → posters, no canvas; forced low tier (stub `WebGL2RenderingContext`) → posters; keyboard traversal of nav + form; 320 px layout has no horizontal scroll; axe has no serious violations.
 - **Effects:** not pixel-asserted. Assert each mounts without throwing in a WebGL-capable headless context and that stubbing WebGL off yields the poster.
 - **Visual:** Playwright screenshot snapshots of the static (non-canvas) UI at 3 breakpoints.
-- **CI (GitHub Actions or Vercel):** typecheck → `oxlint` → unit + component → Playwright (Chromium/WebKit/Firefox) → bundle-analyzer assertion → `@lhci/cli` budget gate. PR blocks on failure.
+- **CI (GitHub Actions or Vercel):** typecheck → `oxlint` (with `react` / `react-hooks` / `jsx-a11y` plugins) → unit + component → Playwright (Chromium/WebKit/Firefox, run against the **production build**) → `@axe-core/playwright` on every route → bundle-`three` assertion → `@lhci/cli` budget gate. PR blocks on failure.
+- **`@lhci/cli` budget gate timing:** deferred to the plan that first adds the shader hero + real page content (Plan 2). A bare route shell has no hero, images, or content, so its Lighthouse numbers are not representative and would just be re-baselined immediately. `@lhci/cli` + a `budget.json` land with the hero.
 
 ---
 
