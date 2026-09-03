@@ -1,8 +1,9 @@
 # Studio Portfolio Site — Design Spec
 
 **Date:** 2026-09-03
-**Status:** Approved design, pending spec review → implementation plan
-**Path:** its own new repo (`portfolio-site/`, renamed to the studio slug once the name is provided)
+**Status:** Approved. Proceeding to implementation plan.
+**Studio:** **BridVance** (slug `bridvance`)
+**Path:** its own repo — `portfolio-site/` (may be renamed to `bridvance/`; cosmetic)
 
 ---
 
@@ -52,17 +53,21 @@ A portfolio site for a small (2–3 person) web studio, deployed to Vercel. It h
 
 ---
 
-## 3. Open inputs (owed by the user, before certain tasks)
+## 3. Inputs
 
-| Input | Blocks |
-|---|---|
-| **Studio name** | Repo/folder final name, `metadata` (title, OG), wordmark, copy throughout |
-| **Studio logo (SVG + PNG)** | `liquid-logo` Lab demo (needs the mark as a texture), nav wordmark, favicon, OG image |
-| **Studio domain** | Vercel domain connection, canonical URLs, `robots`/`sitemap` host |
-| **Contact destination email** | `api/contact` Resend "to" address |
-| Real project cover assets / permission to show live URLs | `/work` card treatments, `liveUrl` fields |
+**Resolved:**
 
-Until the name/logo land, the build uses a text wordmark placeholder `STUDIO` and a neutral geometric mark; all such spots are marked `TODO(brand)` in code.
+- **Studio name:** BridVance.
+- **Logo:** provided — a "BV" monogram, navy `B` fused with an electric-blue `V` that reads as a checkmark (advance + verify). Raster supplied; see below for the vector still needed.
+
+**Still owed by the user:**
+
+| Input | Blocks | Interim |
+|---|---|---|
+| **Logo as SVG** (plus a transparent PNG ≥ 1024px) | `liquid-logo` Lab demo (needs the mark as a clean texture), crisp wordmark, favicon, OG image | Build uses the supplied raster at `public/brand/`; demo 2 and favicon marked `TODO(brand-svg)` |
+| **Studio domain** | Vercel domain, canonical URLs, `robots`/`sitemap` host | `sitemap.ts`/`robots.ts` read `SITE_URL` env; placeholder until set |
+| **Contact destination email** | `api/contact` Resend "to" address | `CONTACT_TO` env; form returns success but mail is a no-op until set |
+| Project cover assets / permission to link live URLs | `/work` card treatments, `liveUrl` fields | Cards render with a generated placeholder cover + `status: 'wip'` |
 
 ---
 
@@ -104,7 +109,7 @@ content/
   work.ts · lab.ts · automation.ts   typed data + zod schemas (validated in a unit test)
 public/
   posters/             one static AVIF/WebP per effect, sized to final dimensions
-  brand/               logo, favicon, og assets  (TODO(brand))
+  brand/               bridvance-logo.(svg|png), favicon, og  (raster in place; SVG pending — TODO(brand-svg))
 ```
 
 ### 4.3 Rendering / GPU island pattern
@@ -142,7 +147,7 @@ Every GPU effect follows exactly one pattern so they are independently understan
 
 ### 5.1 Home (`/`)
 
-Full-bleed **hero** (`@shadergradient/react`, poster gradient beneath until paint) → a one-line **thesis** → the **design ↔ automation split** as two large panels linking to `/lab` and `/automation` → **Work teaser** (3 cards → `/work`) → **Lab teaser** (2 demo posters → `/lab`) → **"How we build" band** (§10.4) → **contact band** (→ `/contact`).
+Full-bleed **hero** (`@shadergradient/react`, poster beneath until paint). Shader palette is tuned to **graphite / deep teal / faint warm spark — deliberately off the blue→purple axis** so it never dilutes BridVance blue into an ambient gradient (§8.1); the poster is a matching dark still, not a blue wash. Then a one-line **thesis** → the **design ↔ automation split** as two large panels linking to `/lab` and `/automation` → **Work teaser** (3 cards → `/work`) → **Lab teaser** (2 demo posters → `/lab`) → **"How we build" band** (§10.4) → **contact band** (→ `/contact`).
 
 One orchestrated page-load: shader fades up from poster, headline settles on its weight axis, nav glass "sets". Reduced-motion: all static.
 
@@ -226,27 +231,30 @@ No CMS. Moving to MDX/a CMS later does not change routing or components — only
 
 ## 8. Visual design system
 
-*Provisional pending the real logo/name; structure is fixed.*
+**Concept:** near-monochrome navy chrome — precise, instrument-like — with **BridVance electric blue as the single point of saturation** anywhere on the site. The shader/3D work supplies texture and depth, not competing colour. Through-line: engineered surfaces (light through glass, metal flowing, systems underneath). The logo's `V`/checkmark reads as *advance + verify* and becomes a structural motif, not decoration.
 
-**Concept:** near-monochrome, precise site chrome — an instrument — so the shader/3D work supplies the colour. Through-line: engineered surfaces (light through glass, metal flowing, systems underneath).
-
-### 8.1 Palette
+### 8.1 Palette (brand-derived)
 
 Dark (default):
 
 | token | value | use |
 |---|---|---|
-| `--bg` | `#0B0C0E` | page ground — near-black, faint cool bias |
-| `--surface` | `#131519` | cards, raised areas |
-| `--fg` | `#ECEDEF` | primary text (cool off-white) |
-| `--muted` | `#8A9099` | secondary text |
-| `--line` | `#24272D` | hairlines, borders |
-| `--accent` | `#E8A33D` | signal amber — interactive states, key CTAs, focus ring; used sparingly |
-| `--status` | `#5BE1B4` | "active / online" — automation transcripts, live dots; rare |
+| `--bg` | `#080B14` | page ground — navy-black (blue family, not neutral black) |
+| `--surface` | `#0F1524` | cards, raised areas |
+| `--surface-2` | `#161E33` | insets, nested raises |
+| `--fg` | `#E8EBF2` | primary text (faint blue-cool white) |
+| `--muted` | `#8791A8` | secondary text |
+| `--line` | `#212A42` | hairlines, borders |
+| `--accent` | `#3B82F6` | BridVance blue — links, focus ring, key CTAs, the one saturated element; used as a **solid**, sparingly |
+| `--accent-strong` | `#4F8DFF` | hover / active state of `--accent` |
+| `--brand-grad` | `linear-gradient(135deg,#1E3A8A,#3B82F6)` | **wordmark + liquid-metal demo only** — never a page/section background |
+| `--status` | `#37E0A8` | "active / online" — automation transcripts, live dots; distinct from brand blue; rare |
 
-Light: `--bg #F4F3F0`, `--surface #FFFFFF`, `--fg #14161A`, `--muted #5A616B`, `--line #E1DFD9`, `--accent #B47A1F`, `--status #1E9E7C`.
+Light: `--bg #F6F7FA`, `--surface #FFFFFF`, `--surface-2 #EEF1F7`, `--fg #0E1524`, `--muted #586079`, `--line #E2E5EE`, `--accent #1D4ED8`, `--accent-strong #2563EB`, `--status #0E9E76`.
 
-Tokens defined on bare `:root` (light), redefined under `@media (prefers-color-scheme: dark)` guarded `:root:not([data-theme="light"])`, and again under `:root[data-theme="dark"]`. `body` background is always an explicit token. Theme toggle persists to `localStorage` (guarded try/catch).
+Tokens on bare `:root` (light), redefined under `@media (prefers-color-scheme: dark)` guarded `:root:not([data-theme="light"])`, and again under `:root[data-theme="dark"]`. `body` background is always an explicit token. Theme toggle persists to `localStorage` (guarded try/catch).
+
+**Keeping it off the generic path:** a dark ground + one blue accent is close to a known template cluster. It stays deliberate here because the accent is the actual brand, the ground is navy not neutral-black, the blue *gradient* is reserved off all backgrounds, the hero shader is tuned **away from the blue→purple axis** (graphite / deep teal / faint warm spark) so BridVance blue is never diluted into an ambient gradient, and the checkmark motif does real structural work (§8.3).
 
 ### 8.2 Type (all self-hosted via `next/font/google`)
 
@@ -258,6 +266,10 @@ Tokens defined on bare `:root` (light), redefined under `@media (prefers-color-s
 ### 8.3 Layout & signature
 
 Precise single-column-with-wide-margins spine for reading; full-bleed for hero and Lab. Section dividers = one hairline + a mono label (labels only where they encode real structure, not decoration).
+
+**Checkmark motif:** the logo's `V`/tick is the section-divider mark and the step marker on the "how we build" strips (§5.4, §10.4) — it encodes *forward / verified*, which is the studio's whole pitch. Not used as filler bullets or ornament.
+
+**Wordmark:** the supplied mark + "BridVance" set in the display face (Familjen Grotesk, tight tracking); the mark carries `--brand-grad`, the text stays `--fg`.
 
 **Signature element:** the **top nav is a real liquid-glass bar** (`LiquidGlass`) — the site using its own showcased tech as load-bearing chrome, refracting whatever scrolls beneath it; `backdrop-filter` fallback where `feDisplacementMap` is unsupported. Everything else stays quiet so this carries. Boldness is spent here and in the hero; nowhere else.
 
@@ -352,7 +364,7 @@ Links to this site's live Lighthouse report and a headers scan. It is positionin
 | `liquid-glass-js` SVG filters break cross-browser (esp. Firefox) | feature-detect; `backdrop-filter` fallback baked into `LiquidGlass` |
 | Ported `liquid-logo` shader becomes a maintenance burden | keep the port minimal, pin the reference commit in a comment, isolate in one folder |
 | Case-study content not ready at launch | preview-card art direction designed to look intentional; `/work/[slug]` deferred |
-| Studio brand assets missing | flagged as open input (§3); build proceeds with `TODO(brand)` placeholders |
+| Logo vector (SVG) not yet supplied | raster used everywhere interim; `liquid-logo` demo + favicon marked `TODO(brand-svg)`, swapped in when the SVG lands — no structural change |
 | Automation use-case scope creep | v1 ships 6–8; data-driven so more is a content entry, not a build |
 | Effect libraries ship their own runtime fetches | reviewed at inclusion; anything with a runtime CDN call is bundled or dropped |
 
