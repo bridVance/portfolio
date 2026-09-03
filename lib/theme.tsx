@@ -48,7 +48,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [sys, setSys] = useState<"light" | "dark">("light");
 
   useEffect(() => {
+    // Client-only hydration: localStorage and matchMedia are unavailable during
+    // SSR, so we mount with "system"/"light" and reconcile to the real stored
+    // choice + OS scheme here. Deliberate external-system sync.
+    // eslint-disable-next-line react/set-state-in-effect
     setChoiceState(readStored());
+    // eslint-disable-next-line react/set-state-in-effect
     setSys(systemResolved());
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const on = () => setSys(mq.matches ? "dark" : "light");
@@ -62,12 +67,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const cycle = useCallback(() => {
-    setChoiceState((cur) => {
-      const next = ORDER[(ORDER.indexOf(cur) + 1) % ORDER.length];
-      apply(next);
-      return next;
-    });
-  }, []);
+    const next = ORDER[(ORDER.indexOf(choice) + 1) % ORDER.length];
+    setChoiceState(next);
+    apply(next);
+  }, [choice]);
 
   const resolved = choice === "system" ? sys : choice;
 

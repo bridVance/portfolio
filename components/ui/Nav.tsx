@@ -36,7 +36,7 @@ export function Nav() {
             open ? "flex" : "hidden md:flex"
           )}
         >
-          {ROUTES.map((r) => (
+          {ROUTES.filter((r) => r.href !== "/").map((r) => (
             <Link
               key={r.href}
               href={r.href}

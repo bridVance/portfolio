@@ -21,8 +21,26 @@ export function getGpuTier(env: GpuEnv): GpuTier {
   return "high";
 }
 
+function readReducedMotion(): boolean {
+  if (typeof window === "undefined") return true;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+// The static half of the environment — WebGL2 support, memory, pointer type,
+// viewport class — never changes for the life of the page, but creating a
+// throwaway <canvas> + WebGL2 context on every island mount leaks GPU contexts
+// (browsers cap them at ~16 and then start dropping the oldest). Probe once,
+// cache, and only re-read `prefers-reduced-motion` per call since the user can
+// flip it live.
+let cachedStaticEnv: Omit<GpuEnv, "reducedMotion"> | null = null;
+
 export function detectGpuEnv(): GpuEnv {
+  if (cachedStaticEnv) {
+    return { ...cachedStaticEnv, reducedMotion: readReducedMotion() };
+  }
+
   if (typeof window === "undefined") {
+    // Don't cache the SSR shape — the client recomputes it after hydration.
     return {
       webgl2: false,
       reducedMotion: true,
@@ -31,30 +49,40 @@ export function detectGpuEnv(): GpuEnv {
       smallViewport: true,
     };
   }
+
   let webgl2 = false;
   try {
     const c = document.createElement("canvas");
-    webgl2 = !!c.getContext("webgl2");
+    const gl = c.getContext("webgl2") as WebGL2RenderingContext | null;
+    webgl2 = !!gl;
+    // Release the probe context immediately so it doesn't sit against the cap.
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
   } catch {
     webgl2 = false;
   }
+
   const nav = navigator as Navigator & {
     deviceMemory?: number;
     connection?: { saveData?: boolean };
   };
-  return {
+
+  cachedStaticEnv = {
     webgl2,
-    reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     saveData: !!nav.connection?.saveData,
     deviceMemory: nav.deviceMemory,
     coarsePointer: window.matchMedia("(pointer: coarse)").matches,
     smallViewport: window.matchMedia("(max-width: 768px)").matches,
   };
+  return { ...cachedStaticEnv, reducedMotion: readReducedMotion() };
 }
 
 export function useGpuTier(): GpuTier {
   const [tier, setTier] = useState<GpuTier>("low");
   useEffect(() => {
+    // Client-only capability probe: WebGL2 / deviceMemory / matchMedia don't
+    // exist during SSR, so we render the safe "low" default and upgrade after
+    // mount. This is external-system synchronization, not derivable state.
+    // eslint-disable-next-line react/set-state-in-effect
     setTier(getGpuTier(detectGpuEnv()));
   }, []);
   return tier;

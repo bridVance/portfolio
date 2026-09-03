@@ -1,4 +1,29 @@
-import { getGpuTier, createFpsGuard, type GpuEnv } from "./gpu";
+import { vi } from "vitest";
+import { getGpuTier, createFpsGuard, detectGpuEnv, type GpuEnv } from "./gpu";
+
+test("detectGpuEnv probes a WebGL2 context at most once across many calls", () => {
+  window.matchMedia = ((q: string) => ({
+    matches: false,
+    media: q,
+    addEventListener() {},
+    removeEventListener() {},
+  })) as unknown as typeof window.matchMedia;
+  const getContext = vi
+    .spyOn(HTMLCanvasElement.prototype, "getContext")
+    .mockReturnValue(null);
+
+  const a = detectGpuEnv();
+  const b = detectGpuEnv();
+  const c = detectGpuEnv();
+
+  const webgl2Probes = getContext.mock.calls.filter((call) => call[0] === "webgl2").length;
+  expect(webgl2Probes).toBeLessThanOrEqual(1);
+  // the cached static half stays identical call-to-call
+  expect(b.webgl2).toBe(a.webgl2);
+  expect(c.smallViewport).toBe(a.smallViewport);
+
+  getContext.mockRestore();
+});
 
 const base: GpuEnv = {
   webgl2: true,

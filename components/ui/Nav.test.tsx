@@ -11,10 +11,12 @@ beforeEach(() => {
   })) as unknown as typeof window.matchMedia;
 });
 
-test("renders a link for every route and the wordmark", () => {
+test("renders a link for every non-home route, plus the wordmark as the home affordance", () => {
   render(<ThemeProvider><Nav /></ThemeProvider>);
-  for (const r of ROUTES) {
+  for (const r of ROUTES.filter((r) => r.href !== "/")) {
     expect(screen.getByRole("link", { name: r.label })).toHaveAttribute("href", r.href);
   }
+  // "Home" is not a nav link — the "BridVance" wordmark is the way back home.
+  expect(screen.queryByRole("link", { name: "Home" })).toBeNull();
   expect(screen.getByRole("link", { name: /bridvance/i })).toHaveAttribute("href", "/");
 });

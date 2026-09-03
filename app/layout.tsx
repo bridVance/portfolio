@@ -4,9 +4,11 @@ import { ThemeProvider, themeInitScript } from "@/lib/theme";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { Nav } from "@/components/ui/Nav";
 import { Footer } from "@/components/ui/Footer";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "BridVance", template: "%s — BridVance" },
   description: "A studio building distinctive web front-ends and agentic automation systems.",
 };
@@ -21,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <SkipLink />
           <Nav />
-          <main id="main">{children}</main>
+          <main id="main" tabIndex={-1}>{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

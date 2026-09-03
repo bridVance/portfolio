@@ -43,6 +43,11 @@ test("skip link is reachable and targets #main", async ({ page, browserName }) =
   await expect(link).toHaveAttribute("href", "#main");
   // sr-only until focused, then revealed on-screen (focus:not-sr-only + fixed).
   await expect(link).toBeInViewport();
+
+  // Activating it must move keyboard focus into <main> (tabIndex={-1}), not just
+  // scroll — otherwise the next Tab resumes from the top of the document.
+  await link.press("Enter");
+  await expect(page.locator("main#main")).toBeFocused();
 });
 
 test("reduced-motion emulation renders no <canvas>", async ({ page }) => {

@@ -47,6 +47,18 @@ for (const files of Object.values(manifest.pages ?? {})) {
   for (const f of files) firstLoad.add(f);
 }
 
+// A 0-chunk (or near-0) "OK" is not a pass — it means `manifest.pages` drifted
+// shape (renamed key, nested differently) and this gate silently stopped
+// inspecting anything. Fail loudly instead.
+const MIN_FIRST_LOAD_CHUNKS = 3;
+if (firstLoad.size < MIN_FIRST_LOAD_CHUNKS) {
+  console.error(
+    `assert-bundle: only ${firstLoad.size} first-load chunk(s) found (expected >= ${MIN_FIRST_LOAD_CHUNKS}). ` +
+      `The '${manifestPath}' 'pages' map likely changed shape — the three.js gate is not actually running.`
+  );
+  process.exit(1);
+}
+
 const offenders = [];
 for (const chunk of firstLoad) {
   if (!chunk.endsWith(".js")) continue;
