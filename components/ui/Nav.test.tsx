@@ -3,8 +3,6 @@ import { ThemeProvider } from "@/lib/theme";
 import { Nav } from "./Nav";
 import { ROUTES } from "@/lib/routes";
 
-vi.mock("liquid-glass-js", () => ({ default: vi.fn(), createLiquidGlass: vi.fn() }));
-
 beforeEach(() => {
   localStorage.clear();
   document.documentElement.removeAttribute("data-theme");

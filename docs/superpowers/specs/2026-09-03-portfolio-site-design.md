@@ -271,7 +271,7 @@ Precise single-column-with-wide-margins spine for reading; full-bleed for hero a
 
 **Wordmark:** the supplied mark + "BridVance" set in the display face (Familjen Grotesk, tight tracking); the mark carries `--brand-grad`, the text stays `--fg`.
 
-**Signature element:** the **top nav is a real liquid-glass bar** (`LiquidGlass`) — the site using its own showcased tech as load-bearing chrome, refracting whatever scrolls beneath it; `backdrop-filter` fallback where `feDisplacementMap` is unsupported. Everything else stays quiet so this carries. Boldness is spent here and in the hero; nowhere else.
+**Signature element:** the **top nav is a liquid-glass bar** (`LiquidGlass`) — load-bearing chrome refracting whatever scrolls beneath it. The look is achieved with pure CSS `backdrop-filter` (blur + saturate over a translucent surface), which refracts the page content directly behind the bar with no DOM cloning and degrades to a plain translucent bar in Firefox. The `liquid-glass-js` npm package is not used for the nav; it is reserved for the Lab's draggable-lens demo, which consumes it directly. Everything else stays quiet so this carries. Boldness is spent here and in the hero; nowhere else.
 
 ### 8.4 Motion
 

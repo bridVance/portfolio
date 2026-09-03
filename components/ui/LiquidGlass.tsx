@@ -1,28 +1,7 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type ElementType,
-  type ReactNode,
-} from "react";
+import type { ElementType, ReactNode } from "react";
 import { cn } from "@/lib/cn";
-
-export function supportsDisplacement(): boolean {
-  if (typeof window === "undefined") return false;
-  // Coarse capability probe. `CSS.supports("backdrop-filter", "url(#x)")` only
-  // confirms the engine *parses* an SVG-filter reference on backdrop-filter; it
-  // cannot confirm the engine actually displaces the backdrop, and no CSS query
-  // can distinguish "accepts url()" from "actually displaces". Firefox notably
-  // returns true here while not applying feDisplacementMap to backdrops, so it
-  // still takes the "live" branch. Real per-engine verification and the Firefox
-  // visual degradation are covered by Playwright in a later plan; this body is
-  // kept exactly as prescribed by the brief.
-  const okFilter =
-    typeof CSS !== "undefined" && CSS.supports("backdrop-filter", "url(#x)");
-  return okFilter;
-}
 
 type Props = {
   as?: ElementType;
@@ -31,78 +10,33 @@ type Props = {
   children: ReactNode;
 };
 
-type GlassInstance = { destroy?: () => void };
-
+/**
+ * Frosted container for the site's "liquid glass" chrome (the top nav).
+ *
+ * Implemented as a pure CSS `backdrop-filter` surface: it refracts/blurs the
+ * page content that scrolls behind it, works in Chromium and Safari, and
+ * degrades to a plain translucent bar in Firefox. No DOM cloning and no runtime
+ * dependency — `backdrop-filter` is the right primitive for a structural bar.
+ * The `liquid-glass-js` package stays installed but unused here; it is reserved
+ * for the Lab's draggable-lens demo, which will consume it directly.
+ */
 export function LiquidGlass({ as, className, intensity = 0.6, children }: Props) {
   const Tag = (as ?? "div") as ElementType;
-  const ref = useRef<HTMLElement>(null);
-  const [mode, setMode] = useState<"fallback" | "live">("fallback");
 
-  useEffect(() => {
-    if (!supportsDisplacement()) return;
-
-    let disposed = false;
-    let instance: GlassInstance | undefined;
-    setMode("live");
-
-    void (async () => {
-      try {
-        const mod: unknown = await import("liquid-glass-js");
-        if (disposed || !ref.current) return;
-
-        const m = mod as {
-          default?: unknown;
-          LiquidGlass?: unknown;
-          createLiquidGlass?: (el: Element, o: object) => GlassInstance;
-        };
-        const clamped = Math.max(0, Math.min(1, intensity));
-
-        if (typeof m.createLiquidGlass === "function") {
-          // Factory form (matches the brief's assumed shape / the test double).
-          instance = m.createLiquidGlass(ref.current, { intensity: clamped });
-        } else {
-          // Real liquid-glass-js@0.1.0 API: `new LiquidGlass({ background, ...params })`.
-          const Ctor = (m.LiquidGlass ?? m.default) as
-            | (new (o: object) => GlassInstance)
-            | undefined;
-          if (typeof Ctor === "function") {
-            instance = new Ctor({
-              background: ref.current,
-              scale: Math.round(clamped * 90),
-            });
-          }
-        }
-      } catch {
-        // Live init failed (import rejected, or the constructor threw because the
-        // engine can't do it). Revert to the CSS backdrop-filter path so the
-        // surface stays readable — without this the element renders bare (just
-        // its border), which for the Task 8 sticky nav is a transparent,
-        // unreadable bar. Skip if the effect was already torn down.
-        if (!disposed) setMode("fallback");
-      }
-    })();
-
-    return () => {
-      disposed = true;
-      instance?.destroy?.();
-    };
-  }, [intensity]);
-
-  const fallbackStyle =
-    mode === "fallback"
-      ? {
-          backdropFilter: "blur(14px) saturate(1.4)",
-          WebkitBackdropFilter: "blur(14px) saturate(1.4)",
-          background: "color-mix(in srgb, var(--surface) 62%, transparent)",
-        }
-      : undefined;
+  // Nominal (intensity 0.6): blur(14px) saturate(1.4). `intensity` scales it gently.
+  const i = Math.max(0, Math.min(1, intensity));
+  const round = (n: number) => String(Math.round(n * 100) / 100);
+  const filter = `blur(${round(8 + i * 10)}px) saturate(${round(1.1 + i * 0.5)})`;
 
   return (
     <Tag
-      ref={ref}
-      data-glass={mode}
+      data-glass="css"
       className={cn("border-b border-line", className)}
-      style={fallbackStyle}
+      style={{
+        backdropFilter: filter,
+        WebkitBackdropFilter: filter,
+        background: "color-mix(in srgb, var(--surface) 62%, transparent)",
+      }}
     >
       {children}
     </Tag>
