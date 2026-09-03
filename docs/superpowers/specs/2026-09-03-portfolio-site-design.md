@@ -265,6 +265,17 @@ Precise single-column-with-wide-margins spine for reading; full-bleed for hero a
 
 One orchestrated Home load (hero fade-up, headline weight-axis settle, nav glass set). Elsewhere restrained: scroll-reveal on section openers, card hover micro-states, the transcript typing. `prefers-reduced-motion` → everything static; shader renders one frozen frame.
 
+### 8.5 Design exploration tooling — Kombai (ideation only)
+
+Kombai (VS Code / Cursor extension) is used **only as a design-idea source**, on its own canvas, driven by the §8 brief: hero compositions, section rhythm, card treatments, type/spacing explorations.
+
+- Output is **reference only** — the user reviews the variations and brings back screenshots / notes on what works.
+- Kombai does **not** write into this repo. No Kombai-generated components are merged; no branch-per-run workflow.
+- Usage stays minimal — a handful of canvas generations on the free tier.
+- All components are built by Claude Code per this spec, informed by whichever compositions and treatments the user selects.
+
+This keeps the GPU-island discipline, security middleware, and test/CI gates fully under one hand, and avoids any third-party code entering the bundle.
+
 ---
 
 ## 9. Dependencies
