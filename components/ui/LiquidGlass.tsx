@@ -11,8 +11,14 @@ import { cn } from "@/lib/cn";
 
 export function supportsDisplacement(): boolean {
   if (typeof window === "undefined") return false;
-  // SVG feDisplacementMap driving backdrop is the capability liquid-glass-js needs.
-  // Firefox does not apply it to backdrops; gate on a known-good combo.
+  // Coarse capability probe. `CSS.supports("backdrop-filter", "url(#x)")` only
+  // confirms the engine *parses* an SVG-filter reference on backdrop-filter; it
+  // cannot confirm the engine actually displaces the backdrop, and no CSS query
+  // can distinguish "accepts url()" from "actually displaces". Firefox notably
+  // returns true here while not applying feDisplacementMap to backdrops, so it
+  // still takes the "live" branch. Real per-engine verification and the Firefox
+  // visual degradation are covered by Playwright in a later plan; this body is
+  // kept exactly as prescribed by the brief.
   const okFilter =
     typeof CSS !== "undefined" && CSS.supports("backdrop-filter", "url(#x)");
   return okFilter;
@@ -67,9 +73,12 @@ export function LiquidGlass({ as, className, intensity = 0.6, children }: Props)
           }
         }
       } catch {
-        // The live SVG-displacement path is best-effort and only meaningful on a
-        // real browser engine; the backdrop-filter fallback already rendered.
-        // Playwright exercises the live path in a later plan.
+        // Live init failed (import rejected, or the constructor threw because the
+        // engine can't do it). Revert to the CSS backdrop-filter path so the
+        // surface stays readable — without this the element renders bare (just
+        // its border), which for the Task 8 sticky nav is a transparent,
+        // unreadable bar. Skip if the effect was already torn down.
+        if (!disposed) setMode("fallback");
       }
     })();
 
