@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.20.0"
+          cache: "npm"
+
+      - run: npm ci
+
+      # --with-deps installs the Linux system libraries the browsers need on the
+      # Ubuntu runner. Never run this locally — see README.
+      - run: npx playwright install --with-deps chromium firefox webkit
+
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run test
+
+      - run: npm run build
+        env:
+          SITE_URL: "https://bridvance.example"
+
+      - run: npm run assert:bundle
+
+      - run: npm run e2e
+        env:
+          SITE_URL: "https://bridvance.example"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+  # No `npm audit` gate here on purpose: stock next@15.5.x and the esbuild devDep
+  # pulled in by liquid-glass-js carry transitive advisories that are not
+  # remediable without a major bump. They are tracked for a pre-launch patch pass
+  # and kept moving by .github/dependabot.yml (weekly npm updates).

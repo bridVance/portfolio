@@ -7,10 +7,13 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "lint": "oxlint .",
     "analyze": "ANALYZE=true next build",
     "e2e": "playwright test",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "assert:bundle": "node scripts/assert-bundle.mjs",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -32,6 +35,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.5.4",
     "jsdom": "^30.0.1",
+    "oxlint": "^1.81.0",
     "postcss": "^8.5.27",
     "tailwindcss": "^3.4.19",
     "typescript": "^5",
