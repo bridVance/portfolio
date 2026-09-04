@@ -11,10 +11,24 @@ beforeEach(() => {
   })) as unknown as typeof window.matchMedia;
 });
 
-test("button announces the action and cycles", async () => {
+test("is a labelled switch reflecting the resolved theme", () => {
   render(<ThemeProvider><ThemeToggle /></ThemeProvider>);
-  const btn = screen.getByRole("button");
-  expect(btn).toHaveAccessibleName(/theme/i);
-  await userEvent.click(btn);
+  const sw = screen.getByRole("switch", { name: /dark mode/i });
+  // matchMedia mock reports light, no stored choice -> unchecked.
+  expect(sw).toHaveAttribute("aria-checked", "false");
+});
+
+test("toggles between explicit light and dark, stamping data-theme", async () => {
+  const user = userEvent.setup();
+  render(<ThemeProvider><ThemeToggle /></ThemeProvider>);
+  const sw = screen.getByRole("switch");
+
+  await user.click(sw); // light -> dark
+  expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+  expect(sw).toHaveAttribute("aria-checked", "true");
+  expect(localStorage.getItem("bv-theme")).toBe("dark");
+
+  await user.click(sw); // dark -> light
   expect(document.documentElement.getAttribute("data-theme")).toBe("light");
+  expect(sw).toHaveAttribute("aria-checked", "false");
 });

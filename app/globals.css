@@ -63,6 +63,115 @@ h1, h2, h3, h4 {
 
 #main { scroll-margin-top: 5rem; }
 
+/* Home-hero background: a soft gradient wash under a faint Voronoi crack
+   network. Light = cream -> blush -> lilac with pale warm cracks; dark = deep
+   navy gradient with light-blue cracks over dark-blue cells. Both crack layers
+   are generated seamless SVGs (~4 KB gzipped, vector) that composite straight
+   over the gradient — no blend mode — and cost nothing on low-end devices. */
+.hero-wash {
+  background-image:
+    url("/textures/hero-craze.svg"),
+    linear-gradient(168deg, #fff6e8 0%, #fdeef0 45%, #efebfb 100%);
+  background-size: 300px 300px, cover;
+  background-repeat: repeat, no-repeat;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero-wash {
+    background-image:
+      url("/textures/hero-craze-dark.svg"),
+      linear-gradient(168deg, #0e1428 0%, #0a0d18 55%, #0b1022 100%);
+  }
+}
+:root[data-theme="dark"] .hero-wash {
+  background-image:
+    url("/textures/hero-craze-dark.svg"),
+    linear-gradient(168deg, #0e1428 0%, #0a0d18 55%, #0b1022 100%);
+}
+
+/* Theme switch (nav): a compact neumorphic sun/moon slider. Track palette and
+   knob position are driven by CSS vars that follow the resolved theme, so the
+   knob is on the right side from first paint (the pre-hydration init script
+   stamps `data-theme`) with no slide-on-load. Reduced-motion kills the
+   transitions via the global rule below. */
+:root {
+  --sw-track: #e9edf5;
+  --sw-track-sh: inset 1px 1px 2px rgba(15, 23, 42, 0.14),
+    inset -1px -1px 2px rgba(255, 255, 255, 0.9);
+  --sw-knob: #ffffff;
+  --sw-knob-sh: 1px 1px 3px rgba(15, 23, 42, 0.26),
+    -1px -1px 2px rgba(255, 255, 255, 0.95);
+  --sw-knob-x: 0px;
+  --sw-sun: 1;
+  --sw-moon: 0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sw-track: #161b28;
+    --sw-track-sh: inset 1px 1px 3px rgba(0, 0, 0, 0.6),
+      inset -1px -1px 2px rgba(255, 255, 255, 0.06);
+    --sw-knob: #d7dbe6;
+    --sw-knob-sh: 1px 1px 3px rgba(0, 0, 0, 0.5),
+      -1px -1px 2px rgba(255, 255, 255, 0.08);
+    --sw-knob-x: 26px;
+    --sw-sun: 0;
+    --sw-moon: 1;
+  }
+}
+:root[data-theme="dark"] {
+  --sw-track: #161b28;
+  --sw-track-sh: inset 1px 1px 3px rgba(0, 0, 0, 0.6),
+    inset -1px -1px 2px rgba(255, 255, 255, 0.06);
+  --sw-knob: #d7dbe6;
+  --sw-knob-sh: 1px 1px 3px rgba(0, 0, 0, 0.5),
+    -1px -1px 2px rgba(255, 255, 255, 0.08);
+  --sw-knob-x: 26px;
+  --sw-sun: 0;
+  --sw-moon: 1;
+}
+
+.theme-switch {
+  position: relative;
+  flex: none;
+  width: 56px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--sw-track);
+  box-shadow: var(--sw-track-sh);
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--sw-knob);
+  box-shadow: var(--sw-knob-sh);
+  transform: translateX(var(--sw-knob-x));
+  transition: transform 0.24s cubic-bezier(0.4, 0.05, 0.2, 1), background 0.25s;
+}
+.theme-switch__i {
+  grid-area: 1 / 1;
+  width: 13px;
+  height: 13px;
+  transition: opacity 0.2s;
+}
+.theme-switch__i--sun {
+  color: #e8a23c;
+  opacity: var(--sw-sun);
+}
+.theme-switch__i--moon {
+  color: #5b63d6;
+  opacity: var(--sw-moon);
+}
+
 :where(a, button, input, textarea, select):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;

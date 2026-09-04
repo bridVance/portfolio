@@ -11,12 +11,26 @@ async function revealPrimaryNav(page: Page) {
 const primaryNav = (page: Page) =>
   page.getByRole("navigation", { name: "Primary" });
 
-test("theme toggle cycles and persists", async ({ page }) => {
+test("theme switch flips between light and dark and persists", async ({ page }) => {
+  // Pin the OS scheme so the switch starts in a known (light) state.
+  await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   await revealPrimaryNav(page);
-  await primaryNav(page).getByRole("button", { name: /theme/i }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await page.reload();
+
+  const toggle = primaryNav(page).getByRole("switch", { name: /dark mode/i });
+  await expect(toggle).toHaveAttribute("aria-checked", "false");
+
+  await toggle.click(); // light -> dark
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(toggle).toHaveAttribute("aria-checked", "true");
+
+  await page.reload(); // persisted via localStorage + the no-flash init script
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  await revealPrimaryNav(page);
+  await primaryNav(page)
+    .getByRole("switch", { name: /dark mode/i })
+    .click(); // dark -> light
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
