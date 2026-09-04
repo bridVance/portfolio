@@ -44,3 +44,14 @@ test("reduced-motion: no canvas, every section visible", async ({ page }) => {
   await expect(page.getByText(/non-negotiables/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /start a project/i })).toBeVisible();
 });
+
+test("reduced-motion hero text is visible immediately on load", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "commit" });
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: /distinctive front-ends\. automation that actually runs\./i,
+    })
+  ).toBeVisible();
+});

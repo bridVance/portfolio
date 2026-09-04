@@ -39,6 +39,8 @@ export function LiquidGlass({ as, className, intensity = 0.6, children }: Props)
         backdropFilter: filter,
         WebkitBackdropFilter: filter,
         background: "color-mix(in srgb, var(--surface) 62%, transparent)",
+        transition:
+          "backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease, background 0.5s ease",
       },
     },
     children

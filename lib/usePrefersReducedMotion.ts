@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 export function usePrefersReducedMotion(): boolean {
   const [reduce, setReduce] = useState(false);
   useEffect(() => {
+    if (!window.matchMedia) return;
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     // oxlint-disable-next-line react/set-state-in-effect
     setReduce(mq.matches);

@@ -1,16 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LiquidGlass } from "./LiquidGlass";
 import { ThemeToggle } from "./ThemeToggle";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/cn";
+import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const reduce = usePrefersReducedMotion();
+  const [set, setSet] = useState(false);
+  // oxlint-disable-next-line react/set-state-in-effect
+  useEffect(() => setSet(true), []);
+  const intensity = reduce || set ? 0.6 : 0.32;
   return (
-    <LiquidGlass as="header" className="sticky top-0 z-40">
+    <LiquidGlass as="header" intensity={intensity} className="sticky top-0 z-40">
       <nav
         aria-label="Primary"
         className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3"

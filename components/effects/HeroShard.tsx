@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useGpuTier } from "@/lib/gpu";
@@ -179,8 +179,18 @@ export default function HeroShard() {
   const high = tier === "high";
   const reduced = prefersReducedMotion();
 
+  const [up, setUp] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setUp(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   return (
-    <div className="h-full w-full" aria-hidden>
+    <div
+      className="h-full w-full transition-opacity duration-700 ease-out motion-reduce:transition-none"
+      style={{ opacity: up || reduced ? 1 : 0 }}
+      aria-hidden
+    >
       <Canvas
         dpr={high ? [1, 2] : [1, 1.5]}
         frameloop={reduced ? "demand" : "always"}
