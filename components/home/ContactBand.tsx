@@ -17,7 +17,7 @@ export function ContactBand() {
         </p>
         <Link
           href="/contact"
-          className="mt-8 inline-flex items-center rounded-md bg-accent px-5 py-3 font-mono text-sm text-on-accent transition-colors hover:bg-accent-strong focus-visible:bg-accent-strong focus-visible:[outline-color:var(--on-accent)]"
+          className="mt-8 inline-flex items-center rounded-md bg-accent px-5 py-3 font-mono text-sm text-on-accent transition-colors hover:bg-accent-strong focus-visible:bg-accent-strong"
         >
           Start a project
         </Link>

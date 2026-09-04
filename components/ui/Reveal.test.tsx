@@ -1,11 +1,9 @@
 import { render, screen, act } from "@testing-library/react";
 
 let ioCb: ((entries: Array<{ isIntersecting: boolean }>) => void) | null;
-let reduce: boolean;
 
 beforeEach(() => {
   ioCb = null;
-  reduce = false;
   class IO {
     constructor(fn: (e: Array<{ isIntersecting: boolean }>) => void) {
       ioCb = fn;
@@ -16,38 +14,33 @@ beforeEach(() => {
   }
   // @ts-expect-error test stub
   global.IntersectionObserver = IO;
-  window.matchMedia = ((q: string) => ({
-    matches: q.includes("reduced-motion") ? reduce : false,
-    media: q,
-    addEventListener() {},
-    removeEventListener() {},
-  })) as unknown as typeof window.matchMedia;
 });
 
 import { Reveal } from "./Reveal";
 
-test("reduced motion: children visible, plain wrapper, no inline transition", () => {
-  reduce = true;
+test("children render in the DOM immediately, inside a .bv-rise wrapper (no data-shown yet)", () => {
   const { container } = render(
-    <Reveal>
+    <Reveal delay={0.24}>
       <p>alpha</p>
     </Reveal>
   );
-  expect(screen.getByText("alpha")).toBeVisible();
-  expect((container.firstElementChild as HTMLElement).getAttribute("style")).toBeNull();
+  expect(screen.getByText("alpha")).toBeInTheDocument();
+  const el = container.firstElementChild as HTMLElement;
+  expect(el).toHaveClass("bv-rise");
+  expect(el.hasAttribute("data-shown")).toBe(false);
+  expect(el.style.transitionDelay).toBe("0.24s");
+  expect(el.className).toContain("bv-rise");
 });
 
-test("children stay in the DOM before intersection; delay applied; reveal flips on intersect", () => {
+test("forwards className and reveals (data-shown) once intersecting", () => {
   const { container } = render(
-    <Reveal delay={0.24}>
+    <Reveal className="mx-auto max-w-4xl">
       <p>beta</p>
     </Reveal>
   );
-  expect(screen.getByText("beta")).toBeInTheDocument();
   const el = container.firstElementChild as HTMLElement;
-  expect(el.style.transitionDelay).toBe("0.24s");
-  expect(el.style.opacity).toBe("0");
+  expect(el).toHaveClass("bv-rise", "mx-auto", "max-w-4xl");
+  expect(el.hasAttribute("data-shown")).toBe(false);
   act(() => ioCb?.([{ isIntersecting: true }]));
-  expect(el.style.opacity).toBe("1");
-  expect(el.style.transform).toBe("none");
+  expect(el.hasAttribute("data-shown")).toBe(true);
 });

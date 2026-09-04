@@ -91,6 +91,29 @@ h1, h2, h3, h4 {
     linear-gradient(168deg, #0e1428 0%, #0a0d18 55%, #0b1022 100%);
 }
 
+/* Scroll / load reveal (§8.4): the hidden state is server-rendered so the
+   transition only ever runs 0 -> 1 (never a visible -> hidden dissolve), and a
+   <noscript> override + the reduced-motion @media keep all content visible when
+   JS is off or motion is reduced. Consumers add `data-shown` when in view. */
+.bv-rise {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.bv-rise[data-shown] {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bv-rise {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Theme switch (nav): a compact neumorphic sun/moon slider. Track palette and
    knob position are driven by CSS vars that follow the resolved theme, so the
    knob is on the right side from first paint (the pre-hydration init script

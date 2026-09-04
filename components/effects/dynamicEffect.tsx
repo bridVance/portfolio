@@ -7,7 +7,7 @@ import { useInViewport } from "@/lib/useInViewport";
 import { EffectBoundary } from "./EffectBoundary";
 import { Poster } from "./Poster";
 
-type PosterCfg = { src: string; width: number; height: number };
+type PosterCfg = { src: string; width: number; height: number; priority?: boolean };
 
 const RANK: Record<GpuTier, number> = { low: 0, mid: 1, high: 2 };
 

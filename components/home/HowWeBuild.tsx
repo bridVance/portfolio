@@ -35,7 +35,10 @@ export function HowWeBuild() {
         Non-negotiables
       </SectionHeading>
 
-      <ul className="mt-10 grid gap-8 md:grid-cols-2">
+      {/* explicit role="list": Tailwind preflight's list-style:none strips the
+          implicit list role in Safari/VoiceOver — restoring it is intentional. */}
+      {/* oxlint-disable-next-line jsx-a11y/no-redundant-roles */}
+      <ul role="list" className="mt-10 grid gap-8 md:grid-cols-2">
         {PILLARS.map((pillar, i) => (
           <li key={pillar.term}>
             <Reveal delay={i * 0.06} className="flex gap-3">
@@ -69,6 +72,7 @@ export function HowWeBuild() {
           className="hover:text-fg"
         >
           Security headers scan &#8599;
+          <span className="sr-only"> (opens in a new tab)</span>
         </a>
       </p>
     </section>

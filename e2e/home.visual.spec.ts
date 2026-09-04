@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-test.skip(!!process.env.CI, "visual baselines are captured on the dev OS; CI's renderer differs");
+test.skip(!process.env.VISUAL, "opt-in layout regression net — run `npm run e2e:visual`");
+test.skip(({ browserName }) => browserName !== "chromium", "baselines are chromium-only");
 
 // A layout-regression net for `/`. It pins the page's declared *static* state —
 // the same one `prefers-reduced-motion` users get — so the baseline is stable

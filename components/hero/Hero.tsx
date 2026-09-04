@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { dynamicEffect } from "@/components/effects/dynamicEffect";
 import { cn } from "@/lib/cn";
-import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 const HeroShardIsland = dynamicEffect(
   () => import("@/components/effects/HeroShard"),
   {
-    poster: { src: "/posters/hero-shard.svg", width: 640, height: 800 },
+    poster: { src: "/posters/hero-shard.svg", width: 640, height: 800, priority: true },
     minTier: "mid",
     rootMargin: "0px",
     className: "absolute inset-0",
@@ -28,24 +27,24 @@ const HeroShardIsland = dynamicEffect(
  * and never pulls three.js into the bundle.
  */
 function Line({
-  shown,
   delay,
   className,
   children,
 }: {
-  shown: boolean;
   delay: number;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
   return (
     <div
+      className={cn("bv-rise", className)}
+      data-shown={shown || undefined}
       style={{ transitionDelay: `${delay}ms` }}
-      className={cn(
-        "transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
-        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
-        className
-      )}
     >
       {children}
     </div>
@@ -53,27 +52,21 @@ function Line({
 }
 
 export function Hero() {
-  const [lit, setLit] = useState(false);
-  const reduce = usePrefersReducedMotion();
-  // oxlint-disable-next-line react/set-state-in-effect
-  useEffect(() => setLit(true), []);
-  const shown = lit || reduce;
-
   return (
     <section className="hero-wash relative isolate overflow-hidden">
       <div className="mx-auto grid max-w-6xl items-stretch md:min-h-[calc(100svh-3.5rem)] md:grid-cols-[1fr_minmax(0,44%)]">
         <div className="flex flex-col justify-center px-4 py-16 md:px-8 md:py-24">
-          <Line shown={shown} delay={80}>
+          <Line delay={80}>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-accent">
               BridVance
             </p>
           </Line>
-          <Line shown={shown} delay={140}>
+          <Line delay={140}>
             <h1 className="mt-3 text-4xl font-medium md:text-6xl">
               Distinctive front-ends. Automation that actually runs.
             </h1>
           </Line>
-          <Line shown={shown} delay={220}>
+          <Line delay={220}>
             <p className="mt-6 max-w-[52ch] font-body text-muted">
               A small studio building web experiences worth looking at, and
               agentic systems that handle the repetitive work behind them.

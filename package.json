@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "assert:bundle": "node scripts/assert-bundle.mjs",
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e",
-    "lhci": "lhci autorun"
+    "lhci": "lhci autorun",
+    "e2e:visual": "cross-env VISUAL=1 playwright test e2e/home.visual.spec.ts --project=chromium-desktop"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
@@ -41,6 +42,7 @@
     "@types/three": "^0.171.0",
     "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.5.4",
+    "cross-env": "^10.1.0",
     "jsdom": "^30.0.1",
     "oxlint": "^1.81.0",
     "postcss": "^8.5.27",

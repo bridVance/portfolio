@@ -39,6 +39,8 @@ test("reduced-motion: no canvas, every section visible", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("canvas")).toHaveCount(0);
+  const heroWrap = page.locator("h1").locator("..");
+  await expect(heroWrap).toHaveCSS("opacity", "1");
   await expect(page.getByText(/we design the surface people touch/i)).toBeVisible();
   await expect(page.getByText(/two halves of one studio/i)).toBeVisible();
   await expect(page.getByText(/non-negotiables/i)).toBeVisible();
@@ -54,4 +56,18 @@ test("reduced-motion hero text is visible immediately on load", async ({ page })
       name: /distinctive front-ends\. automation that actually runs\./i,
     })
   ).toBeVisible();
+});
+
+test.describe("with javascript disabled", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("all home copy renders visible", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.locator("h1").locator("..")).toHaveCSS("opacity", "1");
+    await expect(page.getByText(/we design the surface people touch/i)).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /start a project/i })
+    ).toBeVisible();
+  });
 });

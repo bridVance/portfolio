@@ -32,6 +32,8 @@ firefox webkit` (no `--with-deps` locally — that flag is Ubuntu-only and lives
 `.github/workflows/ci.yml`). `firefox-desktop` may fail to launch on Windows if
 Defender blocks the binary; CI (Linux) runs all five projects.
 
+- `npm run e2e:visual` — opt-in home-layout screenshot check (chromium only; baselines are OS-specific, regenerate with `--update-snapshots`).
+
 ## Environment
 
 Copy `.env.example` to `.env.local`. Only `SITE_URL` matters for this milestone —
