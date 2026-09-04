@@ -1,43 +1,53 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, act } from "@testing-library/react";
 
-let reduce = false;
-let lastProps: Record<string, unknown> | null = null;
+let ioCb: ((entries: Array<{ isIntersecting: boolean }>) => void) | null;
+let reduce: boolean;
 
-vi.mock("framer-motion", () => ({
-  useReducedMotion: () => reduce,
-  motion: {
-    div: (props: Record<string, unknown>) => {
-      lastProps = props;
-      const { initial: _initial, whileInView: _whileInView, viewport: _viewport, transition: _transition, ...rest } = props;
-      return <div {...(rest as Record<string, unknown>)} />;
-    },
-  },
-}));
+beforeEach(() => {
+  ioCb = null;
+  reduce = false;
+  class IO {
+    constructor(fn: (e: Array<{ isIntersecting: boolean }>) => void) {
+      ioCb = fn;
+    }
+    observe() {}
+    disconnect() {}
+    unobserve() {}
+  }
+  // @ts-expect-error test stub
+  global.IntersectionObserver = IO;
+  window.matchMedia = ((q: string) => ({
+    matches: q.includes("reduced-motion") ? reduce : false,
+    media: q,
+    addEventListener() {},
+    removeEventListener() {},
+  })) as unknown as typeof window.matchMedia;
+});
 
 import { Reveal } from "./Reveal";
 
-beforeEach(() => {
-  reduce = false;
-  lastProps = null;
-});
-
-test("renders children (visible) under reduced motion, no motion wrapper", () => {
+test("reduced motion: children visible, plain wrapper, no inline transition", () => {
   reduce = true;
-  render(
+  const { container } = render(
     <Reveal>
       <p>alpha</p>
     </Reveal>
   );
   expect(screen.getByText("alpha")).toBeVisible();
-  expect(lastProps).toBeNull();
+  expect((container.firstElementChild as HTMLElement).getAttribute("style")).toBeNull();
 });
 
-test("animates once mounted and forwards `delay` into the transition", async () => {
-  render(
+test("children stay in the DOM before intersection; delay applied; reveal flips on intersect", () => {
+  const { container } = render(
     <Reveal delay={0.24}>
       <p>beta</p>
     </Reveal>
   );
-  expect(await screen.findByText("beta")).toBeVisible();
-  expect((lastProps?.transition as { delay?: number })?.delay).toBe(0.24);
+  expect(screen.getByText("beta")).toBeInTheDocument();
+  const el = container.firstElementChild as HTMLElement;
+  expect(el.style.transitionDelay).toBe("0.24s");
+  expect(el.style.opacity).toBe("0");
+  act(() => ioCb?.([{ isIntersecting: true }]));
+  expect(el.style.opacity).toBe("1");
+  expect(el.style.transform).toBe("none");
 });

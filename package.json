@@ -19,7 +19,6 @@
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "clsx": "^2.1.1",
-    "framer-motion": "^13.2.0",
     "liquid-glass-js": "^0.1.0",
     "next": "15.5.25",
     "react": "19.1.0",
