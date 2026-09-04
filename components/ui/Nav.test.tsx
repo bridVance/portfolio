@@ -20,3 +20,13 @@ test("renders a link for every non-home route, plus the wordmark as the home aff
   expect(screen.queryByRole("link", { name: "Home" })).toBeNull();
   expect(screen.getByRole("link", { name: /bridvance/i })).toHaveAttribute("href", "/");
 });
+
+test("the wordmark link carries the brand mark", () => {
+  render(
+    <ThemeProvider>
+      <Nav />
+    </ThemeProvider>
+  );
+  const wordmark = screen.getByRole("link", { name: /bridvance/i });
+  expect(wordmark.querySelector("svg")).not.toBeNull();
+});

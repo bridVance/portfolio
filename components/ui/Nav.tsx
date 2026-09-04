@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LiquidGlass } from "./LiquidGlass";
+import { Mark } from "./Mark";
 import { ThemeToggle } from "./ThemeToggle";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/cn";
@@ -21,7 +22,11 @@ export function Nav() {
         aria-label="Primary"
         className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3"
       >
-        <Link href="/" className="font-display text-lg font-semibold tracking-tight">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
+        >
+          <Mark gradient className="h-5 w-5" />
           BridVance
         </Link>
 
