@@ -11,6 +11,7 @@
   --line: #e2e5ee;
   --accent: #1d4ed8;
   --accent-strong: #2563eb;
+  --on-accent: #ffffff;
   --status: #0e9e76;
   --brand-grad: linear-gradient(135deg, #1e3a8a, #3b82f6);
   color-scheme: light;
@@ -26,6 +27,7 @@
     --line: #212a42;
     --accent: #3b82f6;
     --accent-strong: #4f8dff;
+    --on-accent: #0a1220;
     --status: #37e0a8;
     color-scheme: dark;
   }
@@ -40,6 +42,7 @@
   --line: #212a42;
   --accent: #3b82f6;
   --accent-strong: #4f8dff;
+  --on-accent: #0a1220;
   --status: #37e0a8;
   color-scheme: dark;
 }

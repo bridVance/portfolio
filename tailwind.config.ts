@@ -13,6 +13,7 @@ const config: Config = {
         line: "var(--line)",
         accent: "var(--accent)",
         "accent-strong": "var(--accent-strong)",
+        "on-accent": "var(--on-accent)",
         status: "var(--status)",
       },
       fontFamily: {

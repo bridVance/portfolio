@@ -3,6 +3,7 @@ import { Hero } from "@/components/hero/Hero";
 import { Thesis } from "@/components/home/Thesis";
 import { DesignAutomationSplit } from "@/components/home/DesignAutomationSplit";
 import { HowWeBuild } from "@/components/home/HowWeBuild";
+import { ContactBand } from "@/components/home/ContactBand";
 
 export const metadata = pageMetadataHome({
   absoluteTitle: "BridVance — design & agentic automation",
@@ -17,6 +18,7 @@ export default function HomePage() {
       <Thesis />
       <DesignAutomationSplit />
       <HowWeBuild />
+      <ContactBand />
     </>
   );
 }
