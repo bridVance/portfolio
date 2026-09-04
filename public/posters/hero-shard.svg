@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="800" viewBox="0 0 640 800" role="img" aria-label="">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#12204a"/>
+      <stop offset="55%" stop-color="#0b1330"/>
+      <stop offset="100%" stop-color="#080b14"/>
+    </radialGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1b2a52"/>
+      <stop offset="100%" stop-color="#0e1631"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+  </defs>
+  <rect width="640" height="800" fill="url(#glow)"/>
+  <g transform="translate(320 400) rotate(-12)">
+    <polygon points="0,-210 150,-70 118,150 -70,196 -160,20 -104,-150"
+             fill="none" stroke="#3b82f6" stroke-width="10" opacity="0.55" filter="url(#soft)"/>
+    <polygon points="0,-210 150,-70 118,150 -70,196 -160,20 -104,-150" fill="url(#face)"/>
+    <polygon points="0,-210 150,-70 0,20" fill="#22346a" opacity="0.7"/>
+    <polygon points="0,-210 -104,-150 -160,20 0,20" fill="#111c3d" opacity="0.8"/>
+    <polygon points="0,20 -70,196 118,150" fill="#1a2a55" opacity="0.6"/>
+    <polygon points="0,-210 150,-70 118,150 -70,196 -160,20 -104,-150"
+             fill="none" stroke="#3b82f6" stroke-width="2.5" opacity="0.9"/>
+    <polyline points="0,-210 0,20 -70,196" fill="none" stroke="#4f8dff" stroke-width="1.5" opacity="0.5"/>
+    <polyline points="0,20 150,-70" fill="none" stroke="#4f8dff" stroke-width="1.5" opacity="0.5"/>
+    <polyline points="0,20 -160,20" fill="none" stroke="#4f8dff" stroke-width="1.5" opacity="0.5"/>
+  </g>
+</svg>

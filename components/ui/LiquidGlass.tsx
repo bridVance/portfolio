@@ -1,4 +1,4 @@
-import type { ElementType, ReactNode } from "react";
+import { createElement, type ElementType, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 type Props = {
@@ -26,17 +26,21 @@ export function LiquidGlass({ as, className, intensity = 0.6, children }: Props)
   const round = (n: number) => String(Math.round(n * 100) / 100);
   const filter = `blur(${round(8 + i * 10)}px) saturate(${round(1.1 + i * 0.5)})`;
 
-  return (
-    <Tag
-      data-glass="css"
-      className={cn("border-b border-line", className)}
-      style={{
+  // `createElement` rather than `<Tag>` JSX: @react-three/fiber augments the
+  // global JSX namespace with ~150 three.js elements, which collapses the prop
+  // type of a polymorphic `<Tag extends ElementType>` to `never`. createElement
+  // resolves `ElementType` without that intersection.
+  return createElement(
+    Tag,
+    {
+      "data-glass": "css",
+      className: cn("border-b border-line", className),
+      style: {
         backdropFilter: filter,
         WebkitBackdropFilter: filter,
         background: "color-mix(in srgb, var(--surface) 62%, transparent)",
-      }}
-    >
-      {children}
-    </Tag>
+      },
+    },
+    children
   );
 }

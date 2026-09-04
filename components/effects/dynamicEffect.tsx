@@ -52,7 +52,13 @@ function PosterWithNote({ poster }: { poster: PosterCfg }) {
 
 export function dynamicEffect<P extends object>(
   loader: () => Promise<{ default: ComponentType<P> }>,
-  cfg: { poster: PosterCfg; minTier?: "mid" | "high"; rootMargin?: string }
+  cfg: {
+    poster: PosterCfg;
+    minTier?: "mid" | "high";
+    rootMargin?: string;
+    /** Applied to the island's wrapper `<div>` so the consumer can size it. */
+    className?: string;
+  }
 ): ComponentType<P> {
   const minRank = RANK[cfg.minTier ?? "mid"];
   const Lazy = dynamic(loader, { ssr: false, loading: () => <Poster {...cfg.poster} /> });
@@ -123,7 +129,7 @@ export function dynamicEffect<P extends object>(
     }, [live]);
 
     return (
-      <div ref={ref}>
+      <div ref={ref} className={cfg.className}>
         {live ? (
           <EffectBoundary fallback={<PosterWithNote poster={cfg.poster} />}>
             <Lazy {...props} />

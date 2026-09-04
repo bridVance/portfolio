@@ -16,12 +16,15 @@
     "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
     "clsx": "^2.1.1",
     "liquid-glass-js": "^0.1.0",
     "next": "15.5.25",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.171.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
@@ -33,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.171.0",
     "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.5.4",
     "jsdom": "^30.0.1",
