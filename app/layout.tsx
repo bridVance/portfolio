@@ -19,11 +19,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-screen bg-bg text-fg">
+      <body className="flex min-h-screen flex-col bg-bg text-fg">
         <ThemeProvider>
           <SkipLink />
           <Nav />
-          <main id="main" tabIndex={-1}>{children}</main>
+          <main id="main" tabIndex={-1} className="flex-1">
+            {children}
+          </main>
           <Footer />
         </ThemeProvider>
       </body>
