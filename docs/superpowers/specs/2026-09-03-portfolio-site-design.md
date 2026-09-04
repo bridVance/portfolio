@@ -123,7 +123,7 @@ Every GPU effect follows exactly one pattern so they are independently understan
    - A **viewport gate** (IntersectionObserver hook): mounts the dynamic component only when within ~200px of viewport; unmounts when > ~1 viewport past.
 3. **Poster**: a static AVIF/WebP at the effect's exact final dimensions (no layout shift). This is what SSR, no-JS, low-tier, and reduced-motion render.
 
-`three` / `@react-three/fiber` reach the client **only** through these dynamic imports. A `@next/bundle-analyzer` assertion in CI fails the build if `three` appears in the shared/first-load JS. The Home hero is the one place `three` loads on a primary page (via `@shadergradient/react`), deferred until after first paint, poster underneath.
+`three` / `@react-three/fiber` reach the client **only** through these dynamic imports. A `@next/bundle-analyzer` assertion in CI fails the build if `three` appears in the shared/first-load JS. The Home hero is the one place `three` loads on a primary page (the faceted shard via `@react-three/fiber`), deferred until after first paint, poster underneath.
 
 ### 4.4 Cross-device capability tiers
 
@@ -147,9 +147,9 @@ Every GPU effect follows exactly one pattern so they are independently understan
 
 ### 5.1 Home (`/`)
 
-Full-bleed **hero** (`@shadergradient/react`, poster beneath until paint). Shader palette is tuned to **graphite / deep teal / faint warm spark — deliberately off the blue→purple axis** so it never dilutes BridVance blue into an ambient gradient (§8.1); the poster is a matching dark still, not a blue wash. Then a one-line **thesis** → the **design ↔ automation split** as two large panels linking to `/lab` and `/automation` → **Work teaser** (3 cards → `/work`) → **Lab teaser** (2 demo posters → `/lab`) → **"How we build" band** (§10.4) → **contact band** (→ `/contact`).
+Full-bleed **hero**: a custom faceted **shard** rendered with `@react-three/fiber` (§4.3 island — static poster beneath until it mounts, and for every low-tier / no-WebGL / save-data / reduced-motion fallback). Its unlit shader carries an **iridescent gradient** (violet → rose → coral → gold) with a deep-violet Fresnel edge — the site's **one deliberately saturated moment**; everything below the hero stays restrained (§8). Behind the shard, a soft gradient wash under a faint generated Voronoi crack texture: cream → blush → lilac with pale warm crack lines in light, deep navy with light-blue crack lines in dark. The poster is a matching still per theme. Then a one-line **thesis** → the **design ↔ automation split** as two large panels linking to `/lab` and `/automation` → **Work teaser** (3 cards → `/work`) → **Lab teaser** (2 demo posters → `/lab`) → **"How we build" band** (§10.4) → **contact band** (→ `/contact`).
 
-One orchestrated page-load: shader fades up from poster, headline settles on its weight axis, nav glass "sets". Reduced-motion: all static.
+One orchestrated page-load: the shard fades up from its poster, the headline settles in, the nav glass "sets". Reduced-motion: all static, shard frozen on one frame.
 
 ### 5.2 Work (`/work`)
 
@@ -252,9 +252,9 @@ Dark (default):
 
 Light: `--bg #F6F7FA`, `--surface #FFFFFF`, `--surface-2 #EEF1F7`, `--fg #0E1524`, `--muted #586079`, `--line #E2E5EE`, `--accent #1D4ED8`, `--accent-strong #2563EB`, `--status #0E9E76`.
 
-Tokens on bare `:root` (light), redefined under `@media (prefers-color-scheme: dark)` guarded `:root:not([data-theme="light"])`, and again under `:root[data-theme="dark"]`. `body` background is always an explicit token. Theme toggle persists to `localStorage` (guarded try/catch).
+Tokens on bare `:root` (light), redefined under `@media (prefers-color-scheme: dark)` guarded `:root:not([data-theme="light"])`, and again under `:root[data-theme="dark"]`. `body` background is always an explicit token. The theme toggle is a two-position **light / dark** switch (persists to `localStorage`, guarded try/catch); before the first toggle the site follows the OS scheme.
 
-**Keeping it off the generic path:** a dark ground + one blue accent is close to a known template cluster. It stays deliberate here because the accent is the actual brand, the ground is navy not neutral-black, the blue *gradient* is reserved off all backgrounds, the hero shader is tuned **away from the blue→purple axis** (graphite / deep teal / faint warm spark) so BridVance blue is never diluted into an ambient gradient, and the checkmark motif does real structural work (§8.3).
+**Keeping it off the generic path:** a dark ground + one blue accent is close to a known template cluster. It stays deliberate here because the accent is the actual brand, the ground is navy not neutral-black, the blue *gradient* is reserved off all section/page backgrounds, and the checkmark motif does real structural work (§8.3). The hero is the **single deliberately saturated moment** — a discrete framed shard with an iridescent gradient, not an ambient full-bleed wash — so BridVance blue is never diluted into background colour; everything below the hero holds to navy/cream chrome and the one solid `--accent` CTA.
 
 ### 8.2 Type (all self-hosted via `next/font/google`)
 
@@ -276,7 +276,7 @@ Precise single-column-with-wide-margins spine for reading; full-bleed for hero a
 
 ### 8.4 Motion
 
-One orchestrated Home load (hero fade-up, headline weight-axis settle, nav glass set). Elsewhere restrained: scroll-reveal on section openers, card hover micro-states, the transcript typing. `prefers-reduced-motion` → everything static; shader renders one frozen frame.
+One orchestrated Home load (shard fade-up from poster, headline settle, nav glass set — each keyed off its own mount with tuned delays, not a shared timeline). Elsewhere restrained: scroll-reveal on section openers, card hover micro-states, the transcript typing. `prefers-reduced-motion` → everything static; shader renders one frozen frame.
 
 ### 8.5 Design exploration tooling — Kombai (ideation only)
 
@@ -293,7 +293,7 @@ This keeps the GPU-island discipline, security middleware, and test/CI gates ful
 
 ## 9. Dependencies
 
-**Runtime:** `next`, `react`, `react-dom`, `@shadergradient/react` (+ peer `three`, `@react-three/fiber`), `@react-three/drei`, `liquid-glass-js`, `framer-motion`, `zod`, `resend`, `@upstash/redis`, `@upstash/ratelimit`, `clsx`, `tailwind-merge`.
+**Runtime:** `next`, `react`, `react-dom`, `three` + `@react-three/fiber` + `@react-three/drei` (home hero shard + Lab demo #4; dynamically imported, never in first-load JS), `@shadergradient/react` (Lab demo #1 only), `liquid-glass-js`, `framer-motion`, `zod`, `resend`, `@upstash/redis`, `@upstash/ratelimit`, `clsx`, `tailwind-merge`.
 
 **Dev:** `typescript`, `tailwindcss@3`, `postcss`, `autoprefixer`, `@next/bundle-analyzer`, `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@playwright/test`, `oxlint`, `@lhci/cli`.
 
@@ -362,7 +362,7 @@ Links to this site's live Lighthouse report and a headers scan. It is positionin
 | Risk | Mitigation |
 |---|---|
 | `three` leaks into the shared bundle → slow first load | `@next/bundle-analyzer` CI assertion; all R3F reached only via `next/dynamic` |
-| `shadergradient` janky on low-end phones | tier gate + runtime FPS guard + poster; hero `three` deferred past first paint |
+| hero shard / WebGL janky on low-end phones | tier gate + runtime FPS guard + per-theme poster; hero `three` deferred past first paint |
 | `liquid-glass-js` SVG filters / DOM-cloning misbehave (Firefox no-op; clones a structural container) | nav chrome (`LiquidGlass`) is pure CSS `backdrop-filter`, no library; `liquid-glass-js` is used only in the Lab lens demo, which feature-detects and shows a `backdrop-filter` panel where unsupported |
 | Ported `liquid-logo` shader becomes a maintenance burden | keep the port minimal, pin the reference commit in a comment, isolate in one folder |
 | Case-study content not ready at launch | preview-card art direction designed to look intentional; `/work/[slug]` deferred |
