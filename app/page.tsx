@@ -1,5 +1,6 @@
 import { pageMetadataHome } from "@/lib/seo";
 import { Hero } from "@/components/hero/Hero";
+import { Thesis } from "@/components/home/Thesis";
 
 export const metadata = pageMetadataHome({
   absoluteTitle: "BridVance — design & agentic automation",
@@ -8,5 +9,10 @@ export const metadata = pageMetadataHome({
 });
 
 export default function HomePage() {
-  return <Hero />;
+  return (
+    <>
+      <Hero />
+      <Thesis />
+    </>
+  );
 }
