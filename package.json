@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "assert:bundle": "node scripts/assert-bundle.mjs",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e"
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e",
+    "lhci": "lhci autorun"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
+    "@lhci/cli": "^0.15.1",
     "@next/bundle-analyzer": "^15.5.25",
     "@playwright/test": "^1.62.1",
     "@testing-library/jest-dom": "^7.0.1",

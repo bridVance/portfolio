@@ -39,6 +39,13 @@ jobs:
         env:
           SITE_URL: "https://bridvance.example"
 
+      - name: Lighthouse budget
+        env:
+          SITE_URL: "https://bridvance.example"
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('playwright-core').chromium.executablePath())")"
+          npm run lhci
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
