@@ -30,7 +30,7 @@ export function HowWeBuild() {
       aria-labelledby="how-we-build"
       className="mx-auto max-w-6xl px-4 pb-24 md:pb-32"
     >
-      <SectionHeading label="How we build" id="how-we-build" index="02">
+      <SectionHeading label="How we build" id="how-we-build" index="03">
         Non-negotiables
       </SectionHeading>
 

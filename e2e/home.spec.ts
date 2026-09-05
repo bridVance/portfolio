@@ -6,6 +6,9 @@ test("one h1, then the section h2s in order", async ({ page }) => {
   const h2s = await page.locator("h2").allInnerTexts();
   expect(h2s).toEqual([
     "Two halves of one studio",
+    // Rendered text, so the eyebrow's text-transform shows through here. The
+    // DOM text is "How we work" — which is what assistive tech and crawlers get.
+    "HOW WE WORK",
     "Non-negotiables",
     "Have something in mind?",
   ]);

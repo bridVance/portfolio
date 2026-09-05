@@ -433,3 +433,105 @@ h1, h2, h3, h4 {
     scroll-behavior: auto !important;
   }
 }
+
+/* "How we work": a sticky label and rolling counter above a deck of cards that
+   pin and stack. Measured off the reference — cards are half the viewport tall
+   and pin at 32vh, and the runway is (n-1) cards long with a negative margin
+   pulling the deck back up under the label, so label and deck share one scroll
+   region without the deck covering the label. */
+.bv-stack {
+  /* The real height of the label block: rule, section index, and counter. The
+     pin offset below subtracts it, so the label's *bottom* lands at a fixed
+     32vh - 2.75rem no matter what this is — but it has to match the rendered
+     height, or the label hangs past that line and the opaque card clips it. */
+  --bv-label-h: 6.25rem;
+  --bv-card-h: 50vh;
+  position: relative;
+}
+.bv-stack__runway {
+  height: calc(
+    var(--bv-cards) * var(--bv-card-h) - var(--bv-card-h) + var(--bv-label-h)
+  );
+  margin-bottom: calc(
+    var(--bv-card-h) - var(--bv-cards) * var(--bv-card-h) + 1rem
+  );
+  pointer-events: none;
+}
+.bv-stack__pin {
+  position: sticky;
+  /* The label outranks the deck, so a card can never crop it — the same
+     safeguard the reference puts on its own sticky header. */
+  z-index: 1;
+  /* Pinned a clear run above the cards' own 32vh line, so the deck slides
+     under the label instead of over it. */
+  top: calc(32vh - var(--bv-label-h) - 2.75rem);
+}
+.bv-stack__deck {
+  position: relative;
+}
+/* Zero-size scroll markers, one per card, out of flow so they neither add
+   height nor break the cards' shared sticky containing block. */
+.bv-stack__mark {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+}
+.bv-stack__card {
+  position: sticky;
+  top: calc(32vh - 25px);
+  display: flex;
+  height: var(--bv-card-h);
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  /* Opaque, so a card hides the ones it has come to rest on. The surface and
+     page grounds are close in light mode, hence the hairline. */
+  background: var(--surface);
+  transform-origin: center top;
+  /* Buried cards scale back a little, leaving their edges showing as a stack. */
+  transform: scale(calc(1 - var(--bv-depth, 0) * 0.03));
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@media (min-width: 768px) {
+  .bv-stack__card {
+    padding: 3rem;
+  }
+}
+@media (max-width: 767px) {
+  .bv-stack {
+    --bv-card-h: 78svh;
+  }
+}
+
+/* Odometer: a reel of digits inside a one-line window, translated by the
+   active index. One transform drives it — no per-digit bookkeeping. */
+.bv-odo {
+  display: flex;
+  align-items: baseline;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+@media (min-width: 768px) {
+  .bv-odo {
+    font-size: 2.5rem;
+  }
+}
+.bv-odo__win {
+  display: block;
+  height: 1em;
+  overflow: hidden;
+}
+.bv-odo__reel {
+  display: block;
+  transform: translateY(calc(var(--bv-i, 0) * -1em));
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.bv-odo__reel > span {
+  display: block;
+  height: 1em;
+  line-height: 1;
+}
