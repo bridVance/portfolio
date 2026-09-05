@@ -23,7 +23,7 @@
     "clsx": "^2.1.1",
     "liquid-glass-js": "^0.1.0",
     "next": "15.5.25",
-    "react": "19.1.0",
+    "react": "19.2.8",
     "react-dom": "19.1.0",
     "tailwind-merge": "^3.6.0",
     "three": "^0.171.0"
