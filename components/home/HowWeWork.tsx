@@ -176,7 +176,10 @@ export function HowWeWork() {
           <article
             key={p.title}
             className="bv-stack__card"
-            style={{ ["--bv-depth" as string]: Math.max(0, active - i) }}
+            style={{
+              ["--bv-depth" as string]: Math.max(0, active - i),
+              ["--bv-n" as string]: i,
+            }}
           >
             <p className="font-mono text-xs tabular-nums text-accent">
               {String(i + 1).padStart(2, "0")}

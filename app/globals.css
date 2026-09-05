@@ -22,6 +22,10 @@
      following --fg, which inverts. */
   --statement-block: #e8cd9c;
   --statement-ink: #0e1524;
+  /* Veil laid over the crack texture on cards. The hero mutes the same texture
+     with its cream gradient; a card has no such wash, so the pattern comes
+     forward and fights the copy. Raise the alpha to quiet it further. */
+  --card-scrim: rgba(255, 255, 255, 0.58);
   color-scheme: light;
 }
 
@@ -39,6 +43,9 @@
     --status: #37e0a8;
     /* The light blue the dark hero's crack texture is drawn in. */
     --statement-block: #6ea8ff;
+    /* Heavier than light: the dark texture is drawn in a bright blue that
+       carries much further over a dark ground. */
+    --card-scrim: rgba(15, 21, 36, 0.72);
     color-scheme: dark;
   }
 }
@@ -56,6 +63,9 @@
   --status: #37e0a8;
   /* The light blue the dark hero's crack texture is drawn in. */
   --statement-block: #6ea8ff;
+  /* Heavier than light: the dark texture is drawn in a bright blue that
+     carries much further over a dark ground. */
+  --card-scrim: rgba(15, 21, 36, 0.72);
   color-scheme: dark;
 }
 
@@ -489,13 +499,37 @@ h1, h2, h3, h4 {
   padding: 2rem;
   border: 1px solid var(--line);
   border-radius: 0.75rem;
-  /* Opaque, so a card hides the ones it has come to rest on. The surface and
-     page grounds are close in light mode, hence the hairline. */
-  background: var(--surface);
+  /* The hero's crack texture, over an opaque surface so a card still hides the
+     ones it has come to rest on. Same generated SVG the hero uses, so it is
+     already cached — and it tiles at 300px, well inside a card. Each card
+     shifts the tile by its index (set in JS) so stacked cards do not line up
+     into one continuous pattern. The surface and page grounds are close in
+     light mode, hence the hairline. */
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(var(--card-scrim), var(--card-scrim)),
+    url("/textures/hero-craze.svg");
+  background-size: cover, 300px 300px;
+  background-repeat: no-repeat, repeat;
+  background-position:
+    0 0,
+    calc(var(--bv-n, 0) * 71px) calc(var(--bv-n, 0) * 43px);
   transform-origin: center top;
   /* Buried cards scale back a little, leaving their edges showing as a stack. */
   transform: scale(calc(1 - var(--bv-depth, 0) * 0.03));
   transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .bv-stack__card {
+    background-image:
+      linear-gradient(var(--card-scrim), var(--card-scrim)),
+      url("/textures/hero-craze-dark.svg");
+  }
+}
+:root[data-theme="dark"] .bv-stack__card {
+  background-image:
+    linear-gradient(var(--card-scrim), var(--card-scrim)),
+    url("/textures/hero-craze-dark.svg");
 }
 @media (min-width: 768px) {
   .bv-stack__card {
