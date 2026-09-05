@@ -13,10 +13,10 @@ test("one h1, then the section h2s in order", async ({ page }) => {
 
 test("the split panels navigate to /lab and /automation", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: /see the lab/i }).click();
+  await page.getByRole("link", { name: /see it in motion/i }).click();
   await expect(page).toHaveURL(/\/lab$/);
   await page.goBack();
-  await page.getByRole("link", { name: /see automation/i }).click();
+  await page.getByRole("link", { name: /see what they handle/i }).click();
   await expect(page).toHaveURL(/\/automation$/);
 });
 
@@ -41,7 +41,9 @@ test("reduced-motion: no canvas, every section visible", async ({ page }) => {
   await expect(page.locator("canvas")).toHaveCount(0);
   const heroWrap = page.locator("h1").locator("..");
   await expect(heroWrap).toHaveCSS("opacity", "1");
-  await expect(page.getByText(/we design the surface people touch/i)).toBeVisible();
+  await expect(page.locator(".bv-word")).toHaveCount(6);
+  // Reduced motion holds the bands still instead of drifting them sideways.
+  await expect(page.locator(".bv-band").first()).toHaveCSS("transform", "none");
   await expect(page.getByText(/two halves of one studio/i)).toBeVisible();
   await expect(page.getByText(/non-negotiables/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /start a project/i })).toBeVisible();
@@ -65,7 +67,7 @@ test.describe("with javascript disabled", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.locator("h1").locator("..")).toHaveCSS("opacity", "1");
-    await expect(page.getByText(/we design the surface people touch/i)).toBeVisible();
+    await expect(page.locator(".bv-word").first()).toBeVisible();
     await expect(
       page.getByRole("link", { name: /start a project/i })
     ).toBeVisible();

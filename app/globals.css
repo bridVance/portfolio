@@ -14,6 +14,14 @@
   --on-accent: #ffffff;
   --status: #0e9e76;
   --brand-grad: linear-gradient(135deg, #1e3a8a, #3b82f6);
+  /* Statement blocks, one colour per theme: a warm deepened cream in light, the
+     dark hero texture's own light blue in dark. The hero's flat cream
+     (#fff6e8) cannot serve as a block here — against this page it lands at
+     1.00:1, identical luminance, so it would vanish — hence the deeper draw.
+     Both are light panels, so the ink stays dark in both themes rather than
+     following --fg, which inverts. */
+  --statement-block: #e8cd9c;
+  --statement-ink: #0e1524;
   color-scheme: light;
 }
 
@@ -29,6 +37,8 @@
     --accent-strong: #4f8dff;
     --on-accent: #0a1220;
     --status: #37e0a8;
+    /* The light blue the dark hero's crack texture is drawn in. */
+    --statement-block: #6ea8ff;
     color-scheme: dark;
   }
 }
@@ -44,6 +54,8 @@
   --accent-strong: #4f8dff;
   --on-accent: #0a1220;
   --status: #37e0a8;
+  /* The light blue the dark hero's crack texture is drawn in. */
+  --statement-block: #6ea8ff;
   color-scheme: dark;
 }
 
@@ -109,6 +121,212 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce) {
   .bv-rise {
     opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Split-panel previews (§5.1): a miniature site that scrolls itself, and an
+   automation graph whose connectors pulse. Both are decorative and CSS-only —
+   no JS, no dependencies — and both rest in their base state (page at the top,
+   dashes still) under reduced motion. */
+.bv-scroll {
+  animation: bv-scroll 18s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes bv-scroll {
+  0%, 7% { transform: translateY(0); }
+  28%, 35% { transform: translateY(-26%); }
+  56%, 63% { transform: translateY(-52%); }
+  90%, 100% { transform: translateY(0); }
+}
+.bv-flow {
+  stroke-dasharray: 4 6;
+  animation: bv-flow 1.6s linear infinite;
+}
+.bv-flow--2 { animation-delay: -0.55s; }
+.bv-flow--3 { animation-delay: -1.1s; }
+@keyframes bv-flow {
+  to { stroke-dashoffset: -20; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bv-scroll,
+  .bv-flow {
+    animation: none;
+  }
+}
+
+/* Capability ticker: one row of disciplines drifting past, seamlessly. The
+   track holds the list twice and slides exactly half its width, so the seam
+   never shows. Pauses on hover so it can be read, and stands still under
+   reduced motion (the list is plain text either way). */
+.bv-marquee {
+  display: flex;
+  width: max-content;
+  animation: bv-marquee 42s linear infinite;
+}
+.bv-marquee-wrap:hover .bv-marquee,
+.bv-marquee-wrap:focus-within .bv-marquee {
+  animation-play-state: paused;
+}
+@keyframes bv-marquee {
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bv-marquee { animation: none; }
+}
+
+/* Particle word (hero headline): the real word stays in flow and only fades
+   once the canvas above it has painted, so the headline is never blank — if
+   the effect is skipped or bails, `data-hidden` is never set and the word just
+   stays put. The canvas is positioned in JS against the word's glyph box. */
+.bv-pw {
+  position: relative;
+  /* Inline, not inline-block: accessible-name computation treats an
+     inline-block as a block boundary and inserts a space, which turns the
+     headline's name into "front-ends ." with the stop adrift. Relative
+     positioning still gives the canvas its containing block, and the
+     surrounding nowrap keeps this to a single fragment. */
+  display: inline;
+}
+.bv-pw__text {
+  transition: opacity 0.45s ease-out;
+}
+.bv-pw__text[data-hidden] {
+  opacity: 0;
+}
+.bv-pw__canvas {
+  position: absolute;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Belt and braces: the effect never starts under reduced motion, but if the
+     preference flips after it has, the word must not be left invisible. */
+  .bv-pw__text[data-hidden] {
+    opacity: 1;
+  }
+  .bv-pw__canvas {
+    display: none;
+  }
+}
+
+/* Display statement (§5.1): the studio's claim set as scattered display type. */
+/* Type scale for the statement lives here rather than in utility classes:
+   `text-[clamp(...)]` counts as a font-size utility, and tailwind-merge drops
+   any `leading-*` that precedes one (Tailwind's font-size utilities set line
+   height too) — which silently reverted these to the body's 1.6. Pairing size
+   with leading in CSS keeps them together. Sizes are measured off the
+   reference: giants ~8.6vw with tight negative tracking and sub-1 leading. */
+.bv-giant {
+  font-family: var(--font-statement), var(--font-display), system-ui, sans-serif;
+  font-weight: 900;
+  font-size: clamp(50px, 9vw, 140px);
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  /* Each giant sits on a solid cream block. The horizontal padding is pulled
+     back by an equal negative margin so the block bleeds past the text while
+     the text itself stays on the section's 56px margin. */
+  background: var(--statement-block);
+  color: var(--statement-ink);
+  padding: 0.08em 0.1em;
+  margin: 0 -0.1em;
+}
+/* A giant with no block behind it — same face and scale, straight on the page.
+   Dropping the padding and its compensating negative margin puts this word's
+   text on the section margin, where the blocked giants' text already sits. */
+.bv-giant--bare {
+  background: none;
+  color: var(--fg);
+  padding: 0;
+  margin: 0;
+}
+.bv-giant--italic {
+  /* Newsreader italic against the grotesk, the way the reference sets one word
+     of its line in a light italic — the single break in an otherwise heavy row. */
+  font-family: var(--font-body), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.bv-label {
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+/* Each band drifts sideways as the section crosses the viewport — its own
+   distance and direction, so the three slide past each other rather than as a
+   block. `--bv-p` (-1..1) is written to the stage per frame; `--bv-drift` is
+   the band's travel. Neither is set until the script runs, so the untouched
+   fallbacks leave the bands exactly where the layout put them. */
+.bv-band {
+  margin-bottom: 24px;
+  transform: translate3d(calc(var(--bv-drift, 0px) * var(--bv-p, 0)), 0, 0);
+  will-change: transform;
+}
+
+@media (max-width: 700px) {
+  /* Stacked bands have no room to travel, and the drift would cost frames on
+     exactly the phones least able to spare them. */
+  .bv-band {
+    margin-bottom: 26px;
+    transform: none;
+    will-change: auto;
+  }
+  .bv-giant {
+    font-size: clamp(42px, 15vw, 72px);
+    line-height: 0.92;
+  }
+  .bv-giant--italic {
+    font-size: clamp(46px, 16vw, 78px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bv-band {
+    transform: none;
+    will-change: auto;
+  }
+}
+
+/* Words sit still — the section's only motion is the bands' sideways drift. */
+.bv-word {
+  display: block;
+}
+
+/* Stroked display word. Falls back to solid muted text where text-stroke is
+   unsupported — `color: transparent` alone would erase the word. */
+/* The one giant drawn as an outline rather than a fill — a change of texture
+   in the row, still on its accent block. Falls back to solid `--on-accent`
+   where text-stroke is unsupported, since `color: transparent` alone would
+   erase the word. */
+.bv-outline {
+  color: var(--statement-ink);
+}
+@supports (-webkit-text-stroke: 1px currentColor) {
+  .bv-outline {
+    color: transparent;
+    -webkit-text-stroke-color: var(--statement-ink);
+    -webkit-text-stroke-width: 1.5px;
+    /* Positive tracking here, unlike the solid giants — an outline needs the
+       counters opened up or the letters close on themselves. */
+    letter-spacing: 0.02em;
+  }
+}
+
+/* Hairline that draws itself left-to-right as its <Reveal> comes into view —
+   the rule rides the same `data-shown` flag the rise does, so it needs no JS of
+   its own and stays fully drawn when motion is reduced. */
+.bv-rule {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.bv-rise[data-shown] .bv-rule {
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bv-rule {
     transform: none;
     transition: none;
   }

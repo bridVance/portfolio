@@ -1,4 +1,21 @@
-import { Familjen_Grotesk, Newsreader, JetBrains_Mono } from "next/font/google";
+import {
+  Familjen_Grotesk,
+  Newsreader,
+  JetBrains_Mono,
+  Archivo,
+} from "next/font/google";
+
+/**
+ * Statement face — the home page's display composition only. Familjen Grotesk
+ * stops at 700, which reads too light at 140px; Archivo goes to 900. Loaded as
+ * a single weight so it costs one file and nothing else on the site uses it.
+ */
+const statement = Archivo({
+  subsets: ["latin"],
+  weight: ["900"],
+  variable: "--font-statement",
+  display: "swap",
+});
 
 const display = Familjen_Grotesk({
   subsets: ["latin"],
@@ -22,4 +39,4 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-export const fontVars = `${display.variable} ${body.variable} ${mono.variable}`;
+export const fontVars = `${display.variable} ${body.variable} ${mono.variable} ${statement.variable}`;

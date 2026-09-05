@@ -2,9 +2,19 @@ import { render, screen } from "@testing-library/react";
 
 // Force the low tier so the island renders its poster and never imports the
 // R3F effect (jsdom has no WebGL). createFpsGuard is stubbed — the sampler only
-// runs on the live path, which low tier never reaches.
+// runs on the live path, which low tier never reaches. detectGpuEnv/getGpuTier
+// are stubbed for the same reason: the headline's ParticleWord reads them, and
+// low tier must keep it off so the "no canvas" assertion means what it says.
 vi.mock("@/lib/gpu", () => ({
   useGpuTier: () => "low",
+  getGpuTier: () => "low",
+  detectGpuEnv: () => ({
+    webgl2: false,
+    reducedMotion: false,
+    saveData: false,
+    coarsePointer: true,
+    smallViewport: true,
+  }),
   createFpsGuard: () => ({ frame() {}, stop() {} }),
 }));
 

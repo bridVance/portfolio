@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { dynamicEffect } from "@/components/effects/dynamicEffect";
+import { ParticleWord } from "./ParticleWord";
 import { cn } from "@/lib/cn";
 
 const HeroShardIsland = dynamicEffect(
@@ -63,7 +64,14 @@ export function Hero() {
           </Line>
           <Line delay={140}>
             <h1 className="mt-3 text-4xl font-medium md:text-6xl">
-              Distinctive front-ends. Automation that actually runs.
+              {/* The inline-block creates a line-break opportunity after it,
+                  which strands the full stop at the start of the next line —
+                  so word and stop travel together. */}
+              Distinctive{" "}
+              <span className="whitespace-nowrap">
+                <ParticleWord>front-ends</ParticleWord>.
+              </span>{" "}
+              Automation that actually runs.
             </h1>
           </Line>
           <Line delay={220}>

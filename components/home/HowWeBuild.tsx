@@ -1,6 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Mark } from "@/components/ui/Mark";
 
 const PILLARS = [
   { term: "Craft", line: "Distinctive design, not templates." },
@@ -31,23 +30,31 @@ export function HowWeBuild() {
       aria-labelledby="how-we-build"
       className="mx-auto max-w-6xl px-4 pb-24 md:pb-32"
     >
-      <SectionHeading label="How we build" id="how-we-build">
+      <SectionHeading label="How we build" id="how-we-build" index="02">
         Non-negotiables
       </SectionHeading>
 
       {/* explicit role="list": Tailwind preflight's list-style:none strips the
           implicit list role in Safari/VoiceOver — restoring it is intentional. */}
       {/* oxlint-disable-next-line jsx-a11y/no-redundant-roles */}
-      <ul role="list" className="mt-10 grid gap-8 md:grid-cols-2">
+      <ul role="list" className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
         {PILLARS.map((pillar, i) => (
           <li key={pillar.term}>
-            <Reveal delay={i * 0.06} className="flex gap-3">
-              <Mark className="mt-1 h-4 w-4 shrink-0 text-accent" />
-              <div>
-                <p className="font-mono text-sm uppercase tracking-[0.14em] text-fg">
-                  {pillar.term}
-                </p>
-                <p className="mt-1 font-body text-muted">{pillar.line}</p>
+            <Reveal delay={i * 0.06}>
+              <div aria-hidden className="bv-rule h-px w-full bg-line" />
+              <div className="flex gap-4 pt-5">
+                <span
+                  aria-hidden
+                  className="font-mono text-xs tabular-nums text-accent"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <p className="font-mono text-sm uppercase tracking-[0.14em] text-fg">
+                    {pillar.term}
+                  </p>
+                  <p className="mt-1 font-body text-muted">{pillar.line}</p>
+                </div>
               </div>
             </Reveal>
           </li>
