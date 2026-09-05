@@ -440,10 +440,12 @@ h1, h2, h3, h4 {
    pulling the deck back up under the label, so label and deck share one scroll
    region without the deck covering the label. */
 .bv-stack {
-  /* The real height of the label block: rule, section index, and counter. The
-     pin offset below subtracts it, so the label's *bottom* lands at a fixed
-     32vh - 2.75rem no matter what this is — but it has to match the rendered
-     height, or the label hangs past that line and the opaque card clips it. */
+  /* The height of the label block: rule, section index, and counter. The pin
+     offset below subtracts it, so the label's *bottom* lands at a fixed
+     32vh - 2.75rem — but only while this matches the rendered height, or the
+     label hangs past that line and the opaque card clips it. A ResizeObserver
+     overwrites this with the measured height after hydration; the value here
+     is the fallback that has to hold until then (and where RO is missing). */
   --bv-label-h: 6.25rem;
   --bv-card-h: 50vh;
   position: relative;

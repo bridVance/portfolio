@@ -38,8 +38,32 @@ const PIN = 0.32;
  */
 export function HowWeWork() {
   const section = useRef<HTMLElement>(null);
+  const pin = useRef<HTMLDivElement>(null);
   const marks = useRef<(HTMLDivElement | null)[]>([]);
   const [active, setActive] = useState(0);
+
+  // The pin's offset subtracts --bv-label-h, so its *bottom* lands on a fixed
+  // line only while that value matches the label's real height. Measuring it
+  // here means editing the label's copy can no longer push it down onto the
+  // deck. The stylesheet's value stays the pre-hydration fallback.
+  useEffect(() => {
+    const el = pin.current;
+    const root = section.current;
+    if (!el || !root || typeof ResizeObserver === "undefined") return;
+
+    let last = -1;
+    const ro = new ResizeObserver(() => {
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      // Writing the property changes the runway's height and the pin's `top`,
+      // never the pin's own height — so this cannot feed back. The guard is
+      // for sub-pixel churn during font swap, not for a loop.
+      if (h === 0 || h === last) return;
+      last = h;
+      root.style.setProperty("--bv-label-h", `${h}px`);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const els = marks.current.filter(Boolean) as HTMLDivElement[];
@@ -102,7 +126,7 @@ export function HowWeWork() {
       style={{ ["--bv-cards" as string]: PRINCIPLES.length }}
     >
       <div className="bv-stack__runway">
-        <div className="bv-stack__pin border-t border-line pt-6">
+        <div ref={pin} className="bv-stack__pin border-t border-line pt-6">
           {/* The running index sits beside the heading rather than inside it,
               so the h2's text stays "How we work" for the outline and tests. */}
           <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted">

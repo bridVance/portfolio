@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 
 import { HowWeWork } from "./HowWeWork";
 
@@ -63,4 +63,44 @@ test("the odometer reel holds one digit per principle", () => {
 test("the decorative counter is hidden from assistive tech — the cards already number themselves", () => {
   const { container } = render(<HowWeWork />);
   expect(container.querySelector(".bv-odo")).toHaveAttribute("aria-hidden");
+});
+
+test("the label's height is measured, not assumed, so copy edits cannot clip it", () => {
+  let fire: () => void = () => {};
+  const disconnect = vi.fn();
+  const original = window.ResizeObserver;
+  class FakeRO {
+    constructor(cb: () => void) {
+      fire = cb;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect() {
+      disconnect();
+    }
+  }
+  window.ResizeObserver = FakeRO as unknown as typeof ResizeObserver;
+
+  try {
+    const { container, unmount } = render(<HowWeWork />);
+    const section = container.querySelector<HTMLElement>(".bv-stack")!;
+    const pin = container.querySelector<HTMLElement>(".bv-stack__pin")!;
+
+    // Until measured, the stylesheet's fallback stands — nothing inline.
+    expect(section.style.getPropertyValue("--bv-label-h")).toBe("");
+
+    pin.getBoundingClientRect = () => ({ height: 131 }) as DOMRect;
+    act(() => fire());
+    expect(section.style.getPropertyValue("--bv-label-h")).toBe("131px");
+
+    // A zero height (detached / not yet laid out) must not overwrite it.
+    pin.getBoundingClientRect = () => ({ height: 0 }) as DOMRect;
+    act(() => fire());
+    expect(section.style.getPropertyValue("--bv-label-h")).toBe("131px");
+
+    unmount();
+    expect(disconnect).toHaveBeenCalled();
+  } finally {
+    window.ResizeObserver = original;
+  }
 });
