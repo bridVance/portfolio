@@ -14,14 +14,11 @@
     "test:watch": "vitest",
     "assert:bundle": "node scripts/assert-bundle.mjs",
     "verify": "npm audit --omit=dev --audit-level=high && npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e",
-    "lhci": "lhci autorun",
-    "e2e:visual": "cross-env VISUAL=1 playwright test e2e/home.visual.spec.ts --project=chromium-desktop"
+    "lhci": "lhci autorun"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "clsx": "^2.1.1",
-    "liquid-glass-js": "^0.1.0",
     "next": "15.5.25",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -42,7 +39,6 @@
     "@types/three": "^0.171.0",
     "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.5.4",
-    "cross-env": "^10.1.0",
     "jsdom": "^30.0.1",
     "oxlint": "^1.81.0",
     "postcss": "^8.5.27",

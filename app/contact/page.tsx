@@ -2,7 +2,7 @@ import { pageMetadata } from "@/lib/seo";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { ContactForm } from "@/components/contact/ContactForm";
-import { CONTACT, whatsappUrl } from "@/lib/contact";
+import { CONTACT } from "@/lib/contact";
 
 export const metadata = pageMetadata({
   title: "Contact",
@@ -10,7 +10,9 @@ export const metadata = pageMetadata({
   path: "/contact",
 });
 
-const wa = whatsappUrl("Hi BridVance — I'd like to talk about a project.");
+const wa = CONTACT.whatsapp
+  ? `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent("Hi BridVance — I'd like to talk about a project.")}`
+  : null;
 
 export default function ContactPage() {
   return (

@@ -15,8 +15,6 @@ type Props = {
  * page content that scrolls behind it, works in Chromium and Safari, and
  * degrades to a plain translucent bar in Firefox. No DOM cloning and no runtime
  * dependency — `backdrop-filter` is the right primitive for a structural bar.
- * The `liquid-glass-js` package stays installed but unused here; it is reserved
- * for the Lab's draggable-lens demo, which will consume it directly.
  */
 export function LiquidGlass({ as, className, intensity = 0.6, children }: Props) {
   const Tag = (as ?? "div") as ElementType;

@@ -12,8 +12,3 @@ export const CONTACT = {
    */
   whatsapp: "",
 } as const;
-
-export const whatsappUrl = (message: string) =>
-  CONTACT.whatsapp
-    ? `https://wa.me/${CONTACT.whatsapp}?text=${encodeURIComponent(message)}`
-    : null;
