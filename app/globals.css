@@ -575,3 +575,78 @@ h1, h2, h3, h4 {
   height: 1em;
   line-height: 1;
 }
+
+/* Agent demo transcripts (/services): turns arrive on a stagger keyed off one
+   `data-shown` on the container, so a card of four bubbles needs one observer
+   rather than four. Under reduced motion the whole transcript is simply
+   present — it is content, not decoration, so it must never be withheld. */
+.bv-turn {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.bv-chat[data-shown] .bv-turn {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bv-turn {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Accelerator diagrams (/services). CSS-only and looping, in the same spirit as
+   the split-panel previews: decorative, so they cost no JS and stop entirely
+   under reduced motion. */
+.bv-flow--rev {
+  animation-direction: reverse;
+}
+/* A read sweeping down the page. */
+.bv-sweep {
+  animation: bv-sweep 3.6s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+}
+@keyframes bv-sweep {
+  0%, 6% { transform: translateY(4px); opacity: 0; }
+  14% { opacity: 1; }
+  62% { transform: translateY(78px); opacity: 1; }
+  78%, 100% { transform: translateY(78px); opacity: 0; }
+}
+/* Cases settling to a pass, one after another, then round again. */
+.bv-check {
+  opacity: 0;
+  animation: bv-check 4.4s ease-out infinite;
+}
+.bv-case--1 .bv-check { animation-delay: 0.2s; }
+.bv-case--2 .bv-check { animation-delay: 0.9s; }
+.bv-case--3 .bv-check { animation-delay: 1.6s; }
+.bv-case--4 .bv-check { animation-delay: 2.3s; }
+@keyframes bv-check {
+  0% { opacity: 0; }
+  6%, 82% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+/* The layout assembling. */
+.bv-assemble {
+  opacity: 0;
+  animation: bv-assemble 4.2s ease-out infinite;
+}
+.bv-assemble--1 { animation-delay: 0.1s; }
+.bv-assemble--2 { animation-delay: 0.5s; }
+.bv-assemble--3 { animation-delay: 0.9s; }
+.bv-assemble--4 { animation-delay: 1.3s; }
+@keyframes bv-assemble {
+  0% { opacity: 0; }
+  8%, 84% { opacity: 1; }
+  94%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Held in their finished state — a diagram frozen mid-assembly reads as
+     broken, not still. */
+  .bv-sweep { animation: none; opacity: 0; }
+  .bv-check,
+  .bv-assemble { animation: none; opacity: 1; }
+}

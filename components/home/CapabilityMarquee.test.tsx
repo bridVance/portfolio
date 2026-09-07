@@ -24,8 +24,6 @@ test("names capabilities in a business owner's words, not implementation terms",
   expect(text).toMatch(/whatsapp assistants/i);
   // No implementation vocabulary, AI's included — the buyer is a business
   // owner, not an engineer.
-  // No implementation vocabulary, AI's included — the buyer is a business
-  // owner, not an engineer.
   for (const jargon of ["WebGL", "shader", "three.js", "RAG", "embedding", "vector", "LLM"]) {
     expect(text.toLowerCase()).not.toContain(jargon.toLowerCase());
   }
