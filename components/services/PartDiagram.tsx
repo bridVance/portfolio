@@ -12,16 +12,13 @@
 import { SitePreview } from "@/components/home/SitePreview";
 
 const box = {
-  fill: "var(--surface-2)",
+  fill: "var(--surface)",
   stroke: "var(--line)",
 } as const;
 
 function Frame({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      aria-hidden
-      className="mt-5 rounded-lg border border-line bg-surface p-4"
-    >
+    <div aria-hidden className="mt-5 rounded-lg bg-surface-2 p-4">
       <svg viewBox="0 0 260 104" className="w-full" fill="none">
         {children}
       </svg>
@@ -202,9 +199,15 @@ function InterfaceKit() {
 
 /** Already built for the home page, already animated, already decorative. */
 function Website() {
+  // Sat on the same inset panel as every other diagram, rather than loose on
+  // the card: a bordered white window on a white card read as a different kind
+  // of object to its neighbours. Held to 16rem so the 4:3 box lands near the
+  // 187px the SVG diagrams occupy instead of towering over them.
   return (
-    <div className="mt-5">
-      <SitePreview />
+    <div aria-hidden className="mt-5 rounded-lg bg-surface-2 p-4">
+      <div className="mx-auto w-full max-w-[16rem]">
+        <SitePreview />
+      </div>
     </div>
   );
 }

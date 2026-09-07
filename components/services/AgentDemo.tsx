@@ -47,7 +47,7 @@ export function AgentDemo({ turns, label }: { turns: readonly Turn[]; label: str
   return (
     <div
       ref={ref}
-      className="bv-chat mt-5 rounded-lg border border-line bg-surface p-4"
+      className="bv-chat mt-5 rounded-lg bg-surface-2 p-4"
       data-shown={shown || undefined}
     >
       {/* Said out loud, not only to screen readers: these read as real
@@ -76,7 +76,7 @@ export function AgentDemo({ turns, label }: { turns: readonly Turn[]; label: str
                 "max-w-[86%] rounded-lg px-3 py-2 font-body text-sm leading-snug",
                 turn.from === "customer"
                   ? "bg-accent text-on-accent"
-                  : "bg-surface-2 text-fg"
+                  : "bg-surface text-fg"
               )}
             >
               {turn.text}

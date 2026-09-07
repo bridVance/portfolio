@@ -576,6 +576,30 @@ h1, h2, h3, h4 {
   line-height: 1;
 }
 
+/* Service cards (/services). Border and lift only — both composite, so a grid
+   of twenty of these costs nothing to hover on a cheap phone. The lift is the
+   only motion, and it goes away under reduced motion; the border stays, since
+   it is the thing that says "this responds". */
+.bv-card {
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@media (hover: hover) {
+  .bv-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bv-card {
+    transition: border-color 0.25s ease;
+  }
+  .bv-card:hover {
+    transform: none;
+  }
+}
+
 /* Agent demo transcripts (/services): turns arrive on a stagger keyed off one
    `data-shown` on the container, so a card of four bubbles needs one observer
    rather than four. Under reduced motion the whole transcript is simply

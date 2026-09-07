@@ -197,16 +197,20 @@ export default function ServicesPage() {
           {/* explicit role="list": Tailwind preflight's list-style:none strips
               the implicit list role in Safari/VoiceOver. */}
           {/* oxlint-disable-next-line jsx-a11y/no-redundant-roles */}
-          <ul role="list" className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
+          <ul role="list" className="mt-10 grid gap-5 md:grid-cols-2">
             {tier.items.map((item, i) => (
               <li key={item.term}>
-                <Reveal delay={i * 0.05}>
-                  <div aria-hidden className="bv-rule h-px w-full bg-line" />
-                  <div className="pt-5">
+                {/* One card per offering. A rule, then loose text, then a
+                    separately framed diagram read as three unrelated things;
+                    the name, what it does and what it looks like belong to
+                    each other. h-full so a short line does not leave a card
+                    floating above its neighbour's baseline. */}
+                <Reveal delay={i * 0.05} className="h-full">
+                  <div className="bv-card flex h-full flex-col rounded-xl border border-line bg-surface p-5 md:p-6">
                     <p className="font-mono text-sm uppercase tracking-[0.14em] text-fg">
                       {item.term}
                     </p>
-                    <p className="mt-1 max-w-[46ch] font-body text-muted">
+                    <p className="mt-2 max-w-[46ch] font-body text-muted">
                       {item.line}
                     </p>
                     {DEMOS[item.term] ? (
