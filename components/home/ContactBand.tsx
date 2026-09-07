@@ -13,7 +13,7 @@ export function ContactBand() {
           Have something in mind?
         </h2>
         <p className="mx-auto mt-4 max-w-[48ch] font-body text-muted">
-          Tell us what you&rsquo;re building &mdash; front-end, automation, or both.
+          Tell us what you want handled &mdash; an agent, an interface, or the whole thing.
         </p>
         <Link
           href="/contact"

@@ -27,7 +27,18 @@ export function Nav() {
           className="inline-flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
         >
           <Mark gradient className="h-5 w-5" />
-          BridVance
+          {/* The suffix baseline-aligns with the wordmark; centring their boxes
+              floats the smaller text high, since the larger one's box carries
+              descender space it never uses. The mark stays box-centred, which
+              is right for a glyph with no baseline of its own. */}
+          <span className="flex items-baseline gap-2">
+            <span>BridVance</span>{" "}
+            {/* Hidden on the narrowest screens, where the wordmark and the menu
+                button already fill the bar. */}
+            <span className="hidden font-mono text-[0.65rem] font-normal uppercase tracking-[0.18em] text-muted sm:inline">
+              AI agency
+            </span>
+          </span>
         </Link>
 
         <button

@@ -1,12 +1,13 @@
 const ITEMS = [
-  "Custom websites",
-  "Design systems",
-  "3D & motion",
-  "WhatsApp agents",
+  "AI agents",
+  "WhatsApp assistants",
+  "Answers from your own documents",
+  "Workflow automation",
   "Online booking",
   "Automated follow-ups",
   "CRM integration",
-  "Accessibility",
+  "Custom websites",
+  "Design systems",
   "Speed on real phones",
 ] as const;
 
@@ -27,7 +28,7 @@ function Track() {
 
 /**
  * Capability ticker under the hero: the studio's range drifting past in one
- * line, plainly named — a business owner reads "Online booking", not "WebGL".
+ * line, plainly named — a business owner reads "Online booking", not "RAG pipeline".
  *
  * The track holds the list twice and `.bv-marquee` slides it exactly half its
  * width, so the loop is seamless; hover or keyboard focus anywhere in the strip

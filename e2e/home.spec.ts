@@ -5,7 +5,7 @@ test("one h1, then the section h2s in order", async ({ page }) => {
   await expect(page.locator("h1")).toHaveCount(1);
   const h2s = await page.locator("h2").allInnerTexts();
   expect(h2s).toEqual([
-    "Two halves of one studio",
+    "The agent, and the way people meet it",
     // Rendered text, so the eyebrow's text-transform shows through here. The
     // DOM text is "How we work" — which is what assistive tech and crawlers get.
     "HOW WE WORK",
@@ -14,13 +14,13 @@ test("one h1, then the section h2s in order", async ({ page }) => {
   ]);
 });
 
-test("the split panels navigate to /lab and /automation", async ({ page }) => {
+test("the split panels navigate to /services and /lab", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("link", { name: /see it in motion/i }).click();
   await expect(page).toHaveURL(/\/lab$/);
   await page.goBack();
   await page.getByRole("link", { name: /see what they handle/i }).click();
-  await expect(page).toHaveURL(/\/automation$/);
+  await expect(page).toHaveURL(/\/services$/);
 });
 
 test("the contact CTA navigates to /contact", async ({ page }) => {
@@ -47,7 +47,7 @@ test("reduced-motion: no canvas, every section visible", async ({ page }) => {
   await expect(page.locator(".bv-word")).toHaveCount(6);
   // Reduced motion holds the bands still instead of drifting them sideways.
   await expect(page.locator(".bv-band").first()).toHaveCSS("transform", "none");
-  await expect(page.getByText(/two halves of one studio/i)).toBeVisible();
+  await expect(page.getByText(/the agent, and the way people meet it/i)).toBeVisible();
   await expect(page.getByText(/non-negotiables/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /start a project/i })).toBeVisible();
 });
@@ -58,7 +58,7 @@ test("reduced-motion hero text is visible immediately on load", async ({ page })
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: /distinctive front-ends\. automation that actually runs\./i,
+      name: /ai agents that actually ship\. interfaces that make them usable\./i,
     })
   ).toBeVisible();
 });

@@ -8,9 +8,9 @@ import { HowWeWork } from "@/components/home/HowWeWork";
 import { ContactBand } from "@/components/home/ContactBand";
 
 export const metadata = pageMetadataHome({
-  absoluteTitle: "BridVance — design & agentic automation",
+  absoluteTitle: "BridVance — AI agents, assistants & the interfaces around them",
   description:
-    "A studio building distinctive web front-ends and agentic automation systems.",
+    "An independent AI studio: agents and assistants that carry real work, the interfaces people meet them through, and products of our own.",
 });
 
 export default function HomePage() {

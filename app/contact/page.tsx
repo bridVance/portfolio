@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata = pageMetadata({
   title: "Contact",
-  description: "Start a project or request an automation sample.",
+  description: "Start a project, or ask for a sample agent built on your own content.",
   path: "/contact",
 });
 
@@ -12,7 +12,7 @@ export default function ContactPage() {
     <PageHeader
       eyebrow="Get in touch"
       title="Start a project"
-      lede="Tell us what you're building. We reply within one business day."
+      lede="Tell us what you want handled. We reply within one business day, and we will say early if AI is not the right answer."
     />
   );
 }

@@ -10,7 +10,7 @@ import AxeBuilder from "@axe-core/playwright";
 // a settled `opacity:0` element (coverage hole). The `aria-hidden` hero canvas
 // is not axe-scanned under reduced motion, which is acceptable (LHCI runs a
 // full-motion a11y audit).
-const ROUTES = ["/", "/work", "/lab", "/automation", "/contact"];
+const ROUTES = ["/", "/work", "/services", "/products", "/lab", "/contact"];
 
 for (const path of ROUTES) {
   test(`${path} has no serious or critical accessibility violations`, async ({ page }) => {

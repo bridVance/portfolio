@@ -6,25 +6,25 @@ import { FlowPreview } from "./FlowPreview";
 
 const PANELS = [
   {
-    href: "/lab",
-    label: "Design",
-    heading: "Interfaces worth looking at",
-    forWhom: "For businesses that look like everyone else.",
-    cta: "See it in motion",
-    Visual: SitePreview,
-  },
-  {
-    href: "/automation",
-    label: "Automation",
-    heading: "Systems that run the busywork",
+    href: "/services",
+    label: "Intelligence",
+    heading: "Agents that carry the work",
     forWhom: "For teams answering the same questions all day.",
     cta: "See what they handle",
     Visual: FlowPreview,
   },
+  {
+    href: "/lab",
+    label: "Interface",
+    heading: "Surfaces worth using",
+    forWhom: "For businesses that look like everyone else.",
+    cta: "See it in motion",
+    Visual: SitePreview,
+  },
 ] as const;
 
 /**
- * The design ↔ automation split (§5.1): one panel per half of the studio.
+ * The intelligence ↔ interface split (§5.1): one panel per half of the studio.
  * Each panel shows rather than tells — a miniature site browsing itself, and an
  * automation graph moving work through — because the audience is a business
  * owner, not an engineer. Both visuals are decorative CSS/SVG and cost nothing
@@ -37,7 +37,7 @@ export function DesignAutomationSplit() {
       className="mx-auto max-w-6xl px-4 pb-24 md:pb-32"
     >
       <SectionHeading label="What we do" id="what-we-do" index="01">
-        Two halves of one studio
+        The agent, and the way people meet it
       </SectionHeading>
 
       <div className="mt-10 grid divide-y divide-line border-y border-line md:grid-cols-2 md:divide-x md:divide-y-0">

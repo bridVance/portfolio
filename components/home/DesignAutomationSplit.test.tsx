@@ -6,7 +6,7 @@ vi.mock("@/components/ui/Reveal", () => ({
 
 import { DesignAutomationSplit } from "./DesignAutomationSplit";
 
-test("links the design panel to /lab and the automation panel to /automation", () => {
+test("links the intelligence panel to /services and the interface panel to /lab", () => {
   render(<DesignAutomationSplit />);
   expect(screen.getByRole("link", { name: /see it in motion/i })).toHaveAttribute(
     "href",
@@ -14,14 +14,14 @@ test("links the design panel to /lab and the automation panel to /automation", (
   );
   expect(screen.getByRole("link", { name: /see what they handle/i })).toHaveAttribute(
     "href",
-    "/automation"
+    "/services"
   );
 });
 
 test("each panel carries its heading", () => {
   render(<DesignAutomationSplit />);
-  expect(screen.getByText(/interfaces worth looking at/i)).toBeInTheDocument();
-  expect(screen.getByText(/systems that run the busywork/i)).toBeInTheDocument();
+  expect(screen.getByText(/surfaces worth using/i)).toBeInTheDocument();
+  expect(screen.getByText(/agents that carry the work/i)).toBeInTheDocument();
 });
 
 test("each panel names who it is for, in plain language", () => {

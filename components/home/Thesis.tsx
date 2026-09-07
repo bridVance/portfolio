@@ -21,14 +21,13 @@ const KIND = {
 type Slot = { text: string; kind: keyof typeof KIND };
 
 /**
- * Three bands of "Independent design & automation studio, built with craft."
+ * Three bands of "Independent AI & automation studio, built with craft."
  * Each pins one word hard left and one hard right so the composition spans the
  * full measure, as the reference does.
  *
- * Design, automation and studio are giants on cream blocks; the connectives
- * stay small. Design and automation carry equal weight — one solid, one italic
- * — and the line resolves on a quality rather than a service, so neither half
- * of the studio reads as the whole of it.
+ * AI, automation and studio are giants on cream blocks; the connectives stay
+ * small. The line resolves on a quality rather than a service, so no single
+ * offering reads as the whole of the studio.
  *
  * `drift` is the band's horizontal parallax in pixels, alternating direction.
  */
@@ -40,7 +39,7 @@ const BANDS: ReadonlyArray<{
     drift: -80,
     slots: [
       { text: "Independent", kind: "label" },
-      { text: "Design", kind: "solid" },
+      { text: "AI", kind: "solid" },
     ],
   },
   {
@@ -61,7 +60,7 @@ const BANDS: ReadonlyArray<{
 
 /**
  * The studio's claim (§5.1) set as a display composition rather than prose:
- * "Independent design & automation studio, built with craft."
+ * "Independent AI & automation studio, built with craft."
  *
  * The words themselves never move. The only motion is each band drifting
  * sideways as the section crosses the viewport, in alternating directions, so
@@ -127,10 +126,10 @@ export function Thesis() {
     >
       <div ref={ref} className="bv-stage">
         {/* The words are block-level, so their text nodes would run together
-            ("IndependentDesign&Automation…") for assistive tech and crawlers.
+            ("IndependentAI&Automation…") for assistive tech and crawlers.
             The sentence is given once, punctuated; the rest is decorative. */}
         <p className="sr-only">
-          Independent design &amp; automation studio, built with craft.
+          Independent AI &amp; automation studio, built with craft.
         </p>
 
         <div aria-hidden>

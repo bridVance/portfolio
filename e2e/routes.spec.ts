@@ -1,13 +1,14 @@
 import { test, expect } from "@playwright/test";
 
 const ROUTES = [
-  // Home <h1> is the shipped headline ("Distinctive front-ends. ..."), not the
+  // Home <h1> is the shipped headline ("AI agents that actually ship. ..."), not the
   // brand word; keep /bridvance/i as an accepted alt, mirroring how /contact/
   // is paired with /start a project/ below for the same h1-vs-title reason.
-  { path: "/", h1: /distinctive front-ends|bridvance/i, title: /BridVance/ },
+  { path: "/", h1: /ai agents|bridvance/i, title: /BridVance/ },
   { path: "/work", h1: /work/i, title: /Work — BridVance/ },
   { path: "/lab", h1: /lab/i, title: /Lab — BridVance/ },
-  { path: "/automation", h1: /automation/i, title: /Automation — BridVance/ },
+  { path: "/services", h1: /services/i, title: /Services — BridVance/ },
+  { path: "/products", h1: /products/i, title: /Products — BridVance/ },
   { path: "/contact", h1: /contact|start a project/i, title: /Contact — BridVance/ },
 ];
 
@@ -21,9 +22,9 @@ for (const r of ROUTES) {
   });
 }
 
-test("sitemap lists all five routes", async ({ request }) => {
+test("sitemap lists every route", async ({ request }) => {
   const xml = await (await request.get("/sitemap.xml")).text();
-  for (const p of ["/", "/work", "/lab", "/automation", "/contact"]) {
+  for (const p of ["/", "/work", "/services", "/products", "/lab", "/contact"]) {
     expect(xml).toContain(p === "/" ? "<loc>" : p);
   }
 });

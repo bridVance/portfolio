@@ -6,7 +6,7 @@ test("gives assistive tech one punctuated sentence, not the run-together words",
   render(<Thesis />);
   expect(
     screen.getByText(
-      /independent design & automation studio, built with craft\./i
+      /independent ai & automation studio, built with craft\./i
     )
   ).toBeInTheDocument();
   expect(screen.getByRole("region", { name: /what bridvance does/i })).toBeInTheDocument();
@@ -22,9 +22,9 @@ test("the decorative composition is hidden from assistive tech, so nothing is re
 test("neither half of the studio is billed as the whole of it", () => {
   const { container } = render(<Thesis />);
   const text = container.textContent ?? "";
-  // Design and automation both appear, and the line resolves on a quality
-  // rather than on either service — the old copy ended on "automation".
-  expect(text).toMatch(/design/i);
+  // AI and automation both appear, and the line resolves on a quality rather
+  // than on either service — an earlier draft ended on "automation".
+  expect(text).toContain("AI");
   expect(text).toMatch(/automation/i);
   expect(text.trimEnd()).toMatch(/craft\.?$/i);
 });

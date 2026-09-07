@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 
 export const metadata = pageMetadata({
   title: "Lab",
-  description: "Interactive front-end experiments — shaders, 3D, glass, kinetic type.",
+  description: "Runnable experiments — agent demos, shaders, 3D and kinetic type.",
   path: "/lab",
 });
 
@@ -12,7 +12,7 @@ export default function LabPage() {
     <PageHeader
       eyebrow="Experiments"
       title="Lab"
-      lede="Real, runnable demos of the techniques we use in production work."
+      lede="Demos you can actually poke at — agents to talk to, and the interface techniques we use in production."
     />
   );
 }

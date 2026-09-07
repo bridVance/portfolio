@@ -23,17 +23,18 @@ import { Hero } from "./Hero";
 test("renders the hero headline and lede", () => {
   render(<Hero />);
   expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-    /distinctive front-ends\. automation that actually runs\./i
+    /ai agents that actually ship\. interfaces that make them usable\./i
   );
   expect(
-    screen.getByText(/a small studio building web experiences/i)
+    screen.getByText(/an independent ai studio/i)
   ).toBeInTheDocument();
 });
 
 test("low GPU tier renders the poster, not a live canvas", () => {
   const { container } = render(<Hero />);
-  const img = container.querySelector("img");
-  expect(img).not.toBeNull();
-  expect(img).toHaveAttribute("src", "/posters/hero-shard.svg");
+  // One island now: the field shares the shard's scene rather than having its
+  // own canvas, so there is a single fallback.
+  const srcs = [...container.querySelectorAll("img")].map((i) => i.getAttribute("src"));
+  expect(srcs).toEqual(["/posters/hero-shard.svg"]);
   expect(container.querySelector("canvas")).toBeNull();
 });

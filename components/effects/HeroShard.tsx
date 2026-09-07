@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useGpuTier } from "@/lib/gpu";
+import { useTheme } from "@/lib/theme";
+import { VectorFieldObjects } from "./VectorField";
 
 /**
  * Home-hero centrepiece: a faceted shard with a custom unlit surface — an
@@ -96,10 +98,39 @@ const fragmentShader = /* glsl */ `
 const damp = (current: number, target: number, rate: number) =>
   current + (target - current) * rate;
 
-function Shard({ detail, reduced }: { detail: number; reduced: boolean }) {
+/**
+ * The visual column is far taller than it is wide, so the horizontal field of
+ * view is what the shell has to fit inside — z * tan(fov/2) * aspect, about
+ * 1.5 units at an 0.6 aspect. The camera therefore sits further back than the
+ * shard alone needed (6), or the field is cropped at the frame edges.
+ *
+ * FIELD_MAX is the shell's outer radius: buildField pushes points out to 1.14x
+ * before this scale is applied. The depth range is derived from both rather
+ * than hardcoded in the shader, which would mistune silently if either moved.
+ */
+const CAMERA_Z = 9.0;
+const FIELD_SCALE = 1.25;
+/** buildField pushes points out to 1.14x before the group scale is applied. */
+const SHELL_RADIUS = 1.14;
+const FIELD_MAX = FIELD_SCALE * SHELL_RADIUS;
+const FIELD_DEPTH = [CAMERA_Z - FIELD_MAX, CAMERA_Z + FIELD_MAX] as const;
+
+function Shard({
+  detail,
+  reduced,
+  high,
+  filament,
+}: {
+  detail: number;
+  reduced: boolean;
+  high: boolean;
+  filament: string;
+}) {
   const spin = useRef<THREE.Group>(null); // continuous auto-rotation
   const lean = useRef<THREE.Group>(null); // pointer parallax tilt + drift
   const mat = useRef<THREE.ShaderMaterial>(null);
+  const fieldMat = useRef<THREE.ShaderMaterial>(null);
+  const fieldGroup = useRef<THREE.Group>(null);
 
   const geometry = useMemo(() => {
     const geo = new THREE.IcosahedronGeometry(1.0, detail);
@@ -149,11 +180,42 @@ function Shard({ detail, reduced }: { detail: number; reduced: boolean }) {
       lean.current.position.y = damp(lean.current.position.y, state.pointer.y * 0.06, rate);
     }
     if (mat.current) mat.current.uniforms.uTime.value += dt;
+    // The field runs off the same clock and the same frame, so the two can
+    // never drift apart.
+    if (fieldMat.current) fieldMat.current.uniforms.uTime.value += dt;
+  });
+
+  // Outside the reduced-motion bail: the single frame drawn under reduced
+  // motion still needs its DPR and its fit, or the dots come out half size and
+  // the shell hangs off the edges.
+  useFrame((state) => {
+    if (fieldMat.current) fieldMat.current.uniforms.uScale.value = state.viewport.dpr;
+
+    // Fit the shell to whichever axis is tighter. The visual column is tall and
+    // narrow, and how narrow depends on the viewport, so a fixed scale is
+    // either cropped on small screens or needlessly small on large ones.
+    const group = fieldGroup.current;
+    const cam = state.camera as THREE.PerspectiveCamera;
+    if (!group || !cam.isPerspectiveCamera) return;
+    const halfH = cam.position.z * Math.tan((cam.fov / 2) * (Math.PI / 180));
+    const limit = Math.min(halfH, halfH * cam.aspect) * 0.94; // a little margin
+    group.scale.setScalar(Math.min(FIELD_SCALE, limit / SHELL_RADIUS));
   });
 
   return (
     <group ref={lean}>
       <group ref={spin}>
+        {/* Inside the same spin group as the shard, so rotation and the
+            pointer lean are shared rather than merely similar. */}
+        <group ref={fieldGroup} scale={FIELD_SCALE}>
+          <VectorFieldObjects
+            count={high ? 320 : 190}
+            link={high ? 0.24 : 0.3}
+            filament={filament}
+            depth={FIELD_DEPTH}
+            materialRef={fieldMat}
+          />
+        </group>
         <mesh geometry={geometry}>
           <shaderMaterial
             ref={mat}
@@ -179,6 +241,11 @@ export default function HeroShard() {
   const high = tier === "high";
   const reduced = prefersReducedMotion();
 
+  const { resolved } = useTheme();
+  // A single mid-rose washes out on paper. Light gets a deep plum that actually
+  // reads; dark keeps the brighter rose a dark ground needs.
+  const filament = resolved === "dark" ? "#e8709a" : "#6b2a49";
+
   const [up, setUp] = useState(false);
   useEffect(() => {
     const id = requestAnimationFrame(() => setUp(true));
@@ -194,11 +261,16 @@ export default function HeroShard() {
       <Canvas
         dpr={high ? [1, 2] : [1, 1.5]}
         frameloop={reduced ? "demand" : "always"}
-        camera={{ position: [0, 0, 6], fov: 34 }}
+        camera={{ position: [0, 0, CAMERA_Z], fov: 34 }}
         gl={{ antialias: high, powerPreference: "high-performance", alpha: true }}
         style={{ width: "100%", height: "100%", display: "block" }}
       >
-        <Shard detail={high ? 1 : 0} reduced={reduced} />
+        <Shard
+          detail={high ? 1 : 0}
+          reduced={reduced}
+          high={high}
+          filament={filament}
+        />
       </Canvas>
     </div>
   );

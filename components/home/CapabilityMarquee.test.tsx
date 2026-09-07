@@ -14,13 +14,19 @@ test("the duplicated visual is hidden from assistive tech, with one readable lis
   const { container } = render(<CapabilityMarquee />);
   expect(container.querySelector(".bv-marquee")).toHaveAttribute("aria-hidden");
   // Announced once, not twice, and not at all from the moving copies.
-  expect(screen.getByText(/custom websites.*speed on real phones/i)).toBeInTheDocument();
+  expect(screen.getByText(/ai agents.*speed on real phones/i)).toBeInTheDocument();
 });
 
 test("names capabilities in a business owner's words, not implementation terms", () => {
   const { container } = render(<CapabilityMarquee />);
   const text = container.textContent ?? "";
   expect(text).toMatch(/online booking/i);
-  expect(text).toMatch(/whatsapp agents/i);
-  expect(text).not.toMatch(/webgl|shader|react|three\.js/i);
+  expect(text).toMatch(/whatsapp assistants/i);
+  // No implementation vocabulary, AI's included — the buyer is a business
+  // owner, not an engineer.
+  // No implementation vocabulary, AI's included — the buyer is a business
+  // owner, not an engineer.
+  for (const jargon of ["WebGL", "shader", "three.js", "RAG", "embedding", "vector", "LLM"]) {
+    expect(text.toLowerCase()).not.toContain(jargon.toLowerCase());
+  }
 });

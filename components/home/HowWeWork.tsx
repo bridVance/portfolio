@@ -6,15 +6,15 @@ import { Mark } from "@/components/ui/Mark";
 const PRINCIPLES = [
   {
     title: "We start with what the business needs to happen.",
-    body: "Before anything gets designed or automated, we work out what has to change — more enquiries answered, fewer hours lost, a site that finally looks like you.",
+    body: "Before anything gets modelled, designed or automated, we work out what has to change — more enquiries answered, fewer hours lost, a site that finally looks like you.",
   },
   {
     title: "You see it running early, and often.",
     body: "Progress is a link you can open, not a status update. You get something working in front of you while there is still time to change your mind.",
   },
   {
-    title: "We bring an opinion, you make the call.",
-    body: "We will tell you what we think the right move is and why we think it. You decide — but you are not deciding on your own.",
+    title: "We will tell you when AI is the wrong tool.",
+    body: "Plenty of problems are better answered by a form, a rule, or a phone call. We would rather say so than sell you a model that guesses.",
   },
   {
     title: "It has to keep working without us.",

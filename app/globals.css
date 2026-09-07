@@ -192,11 +192,15 @@ h1, h2, h3, h4 {
 .bv-pw {
   position: relative;
   /* Inline, not inline-block: accessible-name computation treats an
-     inline-block as a block boundary and inserts a space, which turns the
-     headline's name into "front-ends ." with the stop adrift. Relative
-     positioning still gives the canvas its containing block, and the
-     surrounding nowrap keeps this to a single fragment. */
+     inline-block as a block boundary and inserts a space, which drops a gap
+     into the middle of the headline's name. Relative positioning still gives
+     the canvas its containing block. */
   display: inline;
+  /* The canvas is placed against the phrase's Range box, which spans both
+     lines if the phrase wraps — leaving the particles stranded between them.
+     Holding it on one line keeps that box unambiguous, and is what lets this
+     carry more than a single word. */
+  white-space: nowrap;
 }
 .bv-pw__text {
   transition: opacity 0.45s ease-out;

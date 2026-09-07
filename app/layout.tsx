@@ -10,7 +10,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "BridVance", template: "%s — BridVance" },
-  description: "A studio building distinctive web front-ends and agentic automation systems.",
+  description: "An independent AI studio building agents, assistants and the interfaces people use them through.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

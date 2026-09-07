@@ -51,5 +51,5 @@ Not yet connected to a remote. To ship:
    Environment Variables.
 4. Push to `main` → production deploy. Every PR → its own preview URL.
 5. Confirm the preview renders all five routes (`/`, `/work`, `/lab`,
-   `/automation`, `/contact`) and that `/robots.txt` + `/sitemap.xml` use the
+   `/services`, `/products`, `/contact`) and that `/robots.txt` + `/sitemap.xml` use the
    configured origin.

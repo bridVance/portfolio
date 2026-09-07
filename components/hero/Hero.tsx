@@ -59,25 +59,20 @@ export function Hero() {
         <div className="flex flex-col justify-center px-4 py-16 md:px-8 md:py-24">
           <Line delay={80}>
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-accent">
-              BridVance
+              BridVance &middot; AI agency
             </p>
           </Line>
           <Line delay={140}>
             <h1 className="mt-3 text-4xl font-medium md:text-6xl">
-              {/* The inline-block creates a line-break opportunity after it,
-                  which strands the full stop at the start of the next line —
-                  so word and stop travel together. */}
-              Distinctive{" "}
-              <span className="whitespace-nowrap">
-                <ParticleWord>front-ends</ParticleWord>.
-              </span>{" "}
-              Automation that actually runs.
+              <ParticleWord>AI agents</ParticleWord> that actually ship.
+              Interfaces that make them usable.
             </h1>
           </Line>
           <Line delay={220}>
             <p className="mt-6 max-w-[52ch] font-body text-muted">
-              A small studio building web experiences worth looking at, and
-              agentic systems that handle the repetitive work behind them.
+              An independent AI studio: agents and assistants that carry real
+              work for real businesses, the interfaces people meet them
+              through, and a few products of our own.
             </p>
           </Line>
         </div>

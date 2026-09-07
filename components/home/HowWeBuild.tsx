@@ -4,16 +4,24 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 const PILLARS = [
   { term: "Craft", line: "Distinctive design, not templates." },
   {
+    term: "Evaluated",
+    line: "Agents are measured against real cases before they go live, not judged on a demo that went well.",
+  },
+  {
+    term: "Grounded",
+    line: "Answers come from your content, with a source you can check — not from a model's memory.",
+  },
+  {
+    term: "Private",
+    line: "Your data stays yours. Not used for training, and no processor we cannot name.",
+  },
+  {
     term: "Performance",
     line: "Fast on a mid-range phone, not just a desktop demo.",
   },
   {
     term: "Accessible",
     line: "Keyboard, contrast, reduced-motion as a baseline.",
-  },
-  {
-    term: "Secure",
-    line: "Hardened headers, validated inputs, dependency hygiene, no data we don't need.",
   },
 ] as const;
 
@@ -23,7 +31,7 @@ const LIGHTHOUSE_URL = "";
 const HEADERS_SCAN_URL =
   "https://securityheaders.com/?q=https%3A%2F%2Fbridvance.vercel.app&followRedirects=on";
 
-/** The four-pillar "how we build" band (§10.4) — positioning that is verifiable. */
+/** The "how we build" band (§10.4) — positioning a client can actually check. */
 export function HowWeBuild() {
   return (
     <section
