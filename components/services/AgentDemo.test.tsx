@@ -16,9 +16,14 @@ test("the whole transcript is in the DOM, not withheld behind the animation", ()
   expect(screen.getByText("Orders, live")).toBeInTheDocument();
 });
 
-test("names itself an example, so it is not mistaken for a real exchange", () => {
-  render(<AgentDemo turns={TURNS} label="Order agent" />);
-  expect(screen.getByText(/example conversation: order agent/i)).toBeInTheDocument();
+test("says on the page that it is an example, not only to screen readers", () => {
+  const { container } = render(<AgentDemo turns={TURNS} label="Order agent" />);
+  const caption = screen.getByText(/example conversation/i);
+  expect(caption).toBeInTheDocument();
+  // Visible, not sr-only — the whole point is that a sighted reader sees it.
+  expect(caption.className).not.toContain("sr-only");
+  // Assistive tech still gets which agent it belongs to.
+  expect(container.textContent).toContain("Example conversation: Order agent");
 });
 
 test("staggers the turns from one flag rather than one observer per bubble", () => {

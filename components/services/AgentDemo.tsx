@@ -50,7 +50,14 @@ export function AgentDemo({ turns, label }: { turns: readonly Turn[]; label: str
       className="bv-chat mt-5 rounded-lg border border-line bg-surface p-4"
       data-shown={shown || undefined}
     >
-      <p className="sr-only">Example conversation: {label}</p>
+      {/* Said out loud, not only to screen readers: these read as real
+          because they are specific, so the page should be the thing that says
+          they are illustrations. The agent's name stays visually hidden —
+          the heading above already carries it. */}
+      <p className="mb-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted">
+        Example conversation
+        <span className="sr-only">: {label}</span>
+      </p>
       {/* explicit role="list": Tailwind preflight's list-style:none strips the
           implicit list role in Safari/VoiceOver. */}
       {/* oxlint-disable-next-line jsx-a11y/no-redundant-roles */}

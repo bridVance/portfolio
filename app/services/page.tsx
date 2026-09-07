@@ -9,7 +9,7 @@ import { PartDiagram } from "@/components/services/PartDiagram";
 export const metadata = pageMetadata({
   title: "Services",
   description:
-    "Three ways to start: a packaged agent, a build assembled from parts we already own, or something made for you from scratch.",
+    "Packaged agents, websites and interfaces, the accelerators both are built from, and bespoke work when none of it fits.",
   path: "/services",
 });
 
@@ -61,6 +61,34 @@ const DEMOS: Record<string, readonly Turn[]> = {
 const TIERS = [
   {
     index: "01",
+    label: "Websites",
+    title: "Sites people actually use",
+    lede: "The other half of the studio, and for most businesses the way in. A site that looks like you rather than the template three competitors also bought, and that holds up on a mid-range phone on a bad connection.",
+    items: [
+      {
+        term: "Business website",
+        line: "Who you are, what you sell and how to reach you — built to turn a visitor into an enquiry you can actually answer.",
+      },
+      {
+        term: "Online store",
+        line: "Products, payments and order tracking, wired to whatever you already run the business on.",
+      },
+      {
+        term: "Landing pages",
+        line: "One page per campaign, built around a single decision, so you can tell what the spend actually did.",
+      },
+      {
+        term: "Dashboards",
+        line: "The internal screens your team lives in, designed with the same care as the public site.",
+      },
+      {
+        term: "Rebuilds",
+        line: "Same business, a site that no longer works against it — usually faster, clearer, and finally decent on a phone.",
+      },
+    ],
+  },
+  {
+    index: "02",
     label: "Packaged",
     title: "Agents with a fixed shape",
     lede: "Jobs that come up again and again, scoped and priced as a package. Same skeleton each time, fitted to your business — which is why these land in weeks rather than quarters.",
@@ -88,7 +116,7 @@ const TIERS = [
     ],
   },
   {
-    index: "02",
+    index: "03",
     label: "Accelerators",
     title: "Parts we already own",
     lede: "The plumbing every build needs, written once and reused. You are not paying us to solve WhatsApp onboarding or calendar sync again — a project starts most of the way up, and the budget goes on what is actually yours.",
@@ -116,7 +144,7 @@ const TIERS = [
     ],
   },
   {
-    index: "03",
+    index: "04",
     label: "Bespoke",
     title: "Built for one business",
     lede: "When the work does not fit a package — an unusual process, a system nobody else integrates with, a product of your own. Slower and more expensive, and sometimes the only thing that will do.",
@@ -143,7 +171,7 @@ export default function ServicesPage() {
       <PageHeader
         eyebrow="What we build"
         title="Services"
-        lede="Three ways in, cheapest first: take something we have built the shape of before, assemble one from parts we already own, or have it made from scratch."
+        lede="Agents, sites, and the parts both are built from. Ready-shaped work first, bespoke last — so you can find your own budget on this page rather than having to ask."
       />
 
       {TIERS.map((tier) => (

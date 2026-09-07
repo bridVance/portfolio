@@ -9,6 +9,8 @@
  * meaning, and a screen reader gains nothing from a diagram of a dashed line.
  */
 
+import { SitePreview } from "@/components/home/SitePreview";
+
 const box = {
   fill: "var(--surface-2)",
   stroke: "var(--line)",
@@ -198,7 +200,141 @@ function InterfaceKit() {
   );
 }
 
+/** Already built for the home page, already animated, already decorative. */
+function Website() {
+  return (
+    <div className="mt-5">
+      <SitePreview />
+    </div>
+  );
+}
+
+/** A product going to basket, then paid for. */
+function Store() {
+  const tiles = [
+    { x: 4, y: 10 },
+    { x: 52, y: 10 },
+    { x: 4, y: 58 },
+    { x: 52, y: 58 },
+  ];
+  return (
+    <Frame>
+      {tiles.map((t, i) => (
+        <rect
+          key={`${t.x}-${t.y}`}
+          x={t.x}
+          y={t.y}
+          width="44"
+          height="36"
+          rx="5"
+          {...box}
+          className={i === 1 ? "bv-pick" : undefined}
+        />
+      ))}
+      <path
+        d="M104 46 C 136 46, 140 52, 168 52"
+        stroke="var(--line)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        className="bv-flow"
+      />
+      <rect x="172" y="34" width="84" height="36" rx="8" {...box} />
+      <text x="184" y="50" className="font-mono" fontSize="7.5" fill="var(--muted)">
+        basket
+      </text>
+      <g className="bv-paid">
+        <text x="184" y="62" className="font-mono" fontSize="7.5" fill="var(--status)">
+          paid
+        </text>
+        <path
+          d="M214 57 l3 3 l6 -6.5"
+          stroke="var(--status)"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </g>
+    </Frame>
+  );
+}
+
+/** Everything on the page leaning toward one decision. */
+function Landing() {
+  return (
+    <Frame>
+      <rect x="60" y="4" width="140" height="96" rx="6" {...box} />
+      <rect x="72" y="16" width="116" height="9" rx="3" fill="var(--line)" />
+      <rect x="72" y="31" width="90" height="5" rx="2" fill="var(--line)" />
+      <rect x="72" y="41" width="104" height="5" rx="2" fill="var(--line)" />
+      {/* The one thing the page is for. */}
+      <rect
+        className="bv-ring"
+        x="94"
+        y="58"
+        width="72"
+        height="24"
+        rx="7"
+        fill="var(--accent)"
+        opacity="0.35"
+      />
+      <rect
+        className="bv-pulse"
+        x="94"
+        y="58"
+        width="72"
+        height="24"
+        rx="7"
+        fill="var(--accent)"
+      />
+      <text x="110" y="74" className="font-mono" fontSize="8" fill="var(--on-accent)">
+        enquire
+      </text>
+      <g stroke="var(--line)" strokeWidth="1.5" strokeLinecap="round">
+        <path d="M8 34 C 34 34, 40 66, 88 70" className="bv-flow" />
+        <path d="M8 92 C 34 92, 40 78, 88 74" className="bv-flow bv-flow--2" />
+        <path d="M252 34 C 226 34, 220 66, 172 70" className="bv-flow bv-flow--3" />
+      </g>
+    </Frame>
+  );
+}
+
+/** The same business, before and after. */
+function Rebuild() {
+  return (
+    <Frame>
+      <g className="bv-before">
+        <rect x="6" y="8" width="248" height="88" rx="6" {...box} />
+        {[14, 24, 34, 44, 54, 64, 74, 84].map((y) => (
+          <rect key={y} x="14" y={y} width={y % 3 ? 168 : 210} height="5" rx="2" fill="var(--line)" />
+        ))}
+        <rect x="196" y="14" width="48" height="30" rx="3" fill="var(--line)" opacity="0.7" />
+      </g>
+      <g className="bv-after">
+        <rect x="6" y="8" width="248" height="88" rx="6" {...box} />
+        <rect
+          x="18"
+          y="18"
+          width="104"
+          height="26"
+          rx="5"
+          fill="var(--accent)"
+          opacity="0.85"
+        />
+        <rect x="18" y="54" width="150" height="6" rx="3" fill="var(--line)" />
+        <rect x="18" y="68" width="112" height="6" rx="3" fill="var(--line)" />
+        <rect x="150" y="18" width="86" height="56" rx="5" {...box} />
+      </g>
+    </Frame>
+  );
+}
+
 const DIAGRAMS: Record<string, () => React.ReactElement> = {
+  "Business website": Website,
+  "Online store": Store,
+  "Landing pages": Landing,
+  Rebuilds: Rebuild,
+  // The assembling-layout diagram belongs to a dashboard as much as to the kit.
+  Dashboards: InterfaceKit,
   Channels,
   "Your systems": Systems,
   Retrieval,

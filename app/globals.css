@@ -650,3 +650,72 @@ h1, h2, h3, h4 {
   .bv-check,
   .bv-assemble { animation: none; opacity: 1; }
 }
+
+/* Website-tier diagrams. Same rules as the accelerators: CSS only, decorative,
+   and resting in a finished state under reduced motion. */
+
+/* The item being chosen, then the basket settling to paid. */
+.bv-pick {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bv-pick 4s ease-in-out infinite;
+}
+@keyframes bv-pick {
+  0%, 12% { stroke: var(--line); transform: none; }
+  26%, 62% { stroke: var(--accent); transform: translateY(-3px); }
+  76%, 100% { stroke: var(--line); transform: none; }
+}
+.bv-paid {
+  opacity: 0;
+  animation: bv-paid 4s ease-out infinite;
+}
+@keyframes bv-paid {
+  0%, 55% { opacity: 0; }
+  68%, 88% { opacity: 1; }
+  96%, 100% { opacity: 0; }
+}
+
+/* One decision on the page, and a ring drawing the eye to it. */
+.bv-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bv-pulse 2.6s ease-in-out infinite;
+}
+@keyframes bv-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+.bv-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bv-ring 2.6s ease-out infinite;
+}
+@keyframes bv-ring {
+  0% { transform: scale(1); opacity: 0.35; }
+  70%, 100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Before and after, crossfading and holding on each. */
+.bv-before { animation: bv-before 6s ease-in-out infinite; }
+.bv-after { opacity: 0; animation: bv-after 6s ease-in-out infinite; }
+@keyframes bv-before {
+  0%, 38% { opacity: 1; }
+  50%, 88% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes bv-after {
+  0%, 38% { opacity: 0; }
+  50%, 88% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Each holds the state that reads as finished: chosen, paid, rebuilt. */
+  .bv-pick,
+  .bv-pulse,
+  .bv-ring { animation: none; }
+  .bv-ring { opacity: 0; }
+  .bv-paid { animation: none; opacity: 1; }
+  .bv-before { animation: none; opacity: 0; }
+  .bv-after { animation: none; opacity: 1; }
+}
