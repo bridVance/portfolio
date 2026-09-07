@@ -7,7 +7,7 @@
  */
 export const ROUTES = [
   { href: "/", label: "Home" },
-  { href: "/work", label: "Work", thin: true },
+  { href: "/work", label: "Work" },
   { href: "/services", label: "Services" },
   { href: "/products", label: "Products", thin: true },
   { href: "/lab", label: "Lab", thin: true },

@@ -27,13 +27,13 @@ test("sitemap lists the routes with content, and only those", async ({ request }
   // A route that is still only a PageHeader stays in the nav but out of the
   // sitemap — see ROUTES `thin`. Submitting four near-empty pages for indexing
   // is a thin-content signal, not coverage.
-  for (const p of ["/services", "/contact"]) expect(xml).toContain(p);
+  for (const p of ["/services", "/contact", "/work"]) expect(xml).toContain(p);
   expect(xml).toContain("<loc>");
-  for (const p of ["/work", "/products", "/lab"]) expect(xml).not.toContain(p);
+  for (const p of ["/products", "/lab"]) expect(xml).not.toContain(p);
 });
 
 test("thin routes are marked noindex", async ({ page }) => {
-  for (const p of ["/work", "/products", "/lab"]) {
+  for (const p of ["/products", "/lab"]) {
     await page.goto(p);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       "content",

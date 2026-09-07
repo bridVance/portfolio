@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { fontVars } from "./fonts";
+import { fontVars } from "../fonts";
 import { ThemeProvider, themeInitScript } from "@/lib/theme";
 import { SkipLink } from "@/components/ui/SkipLink";
 import { Nav } from "@/components/ui/Nav";
 import { Footer } from "@/components/ui/Footer";
 import { SITE_URL } from "@/lib/seo";
-import "./globals.css";
+import "../globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
