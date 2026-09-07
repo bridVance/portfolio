@@ -51,6 +51,16 @@ const securityHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // A verification build can write somewhere other than .next, so running one
+  // no longer replaces the dev server's own build underneath it and leaves the
+  // page serving unstyled 404s. `next start` and scripts/assert-bundle.mjs read
+  // the same variable.
+  //
+  // Note: `next build` rewrites next-env.d.ts and tsconfig.json to point at
+  // whatever distDir resolved to, so a BUILD_DIR run dirties both. They are
+  // committed pointing at .next; restore them after a verification build:
+  //   git checkout -- next-env.d.ts tsconfig.json
+  distDir: process.env.BUILD_DIR || ".next",
   reactStrictMode: true,
   poweredByHeader: false,
   images: { formats: ["image/avif", "image/webp"] },

@@ -32,7 +32,7 @@ export function LiquidGlass({ as, className, intensity = 0.6, children }: Props)
     Tag,
     {
       "data-glass": "css",
-      className: cn("border-b border-line", className),
+      className: cn(className),
       style: {
         backdropFilter: filter,
         WebkitBackdropFilter: filter,

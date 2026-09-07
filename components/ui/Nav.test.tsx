@@ -13,11 +13,17 @@ beforeEach(() => {
 
 test("renders a link for every non-home route, plus the wordmark as the home affordance", () => {
   render(<ThemeProvider><Nav /></ThemeProvider>);
-  for (const r of ROUTES.filter((r) => r.href !== "/")) {
+  for (const r of ROUTES.filter((r) => r.href !== "/" && r.href !== "/contact")) {
     expect(screen.getByRole("link", { name: r.label })).toHaveAttribute("href", r.href);
   }
   // "Home" is not a nav link — the "BridVance" wordmark is the way back home.
   expect(screen.queryByRole("link", { name: "Home" })).toBeNull();
+  // Nor is "Contact": the "Get in touch" button is the only route to it.
+  expect(screen.queryByRole("link", { name: "Contact" })).toBeNull();
+  expect(screen.getByRole("link", { name: /get in touch/i })).toHaveAttribute(
+    "href",
+    "/contact"
+  );
   expect(screen.getByRole("link", { name: /bridvance/i })).toHaveAttribute("href", "/");
 });
 

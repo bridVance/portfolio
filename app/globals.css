@@ -27,6 +27,17 @@
      the raised node it measured 3.67:1 in dark, under the 4.5:1 that small
      text needs. Light already passes there, so it keeps --muted's value. */
   --muted-strong: #586079;
+  /* Height the fixed nav pill reserves at the top of every page. */
+  --bv-nav-h: 4.75rem;
+  /* Motion. The interaction layer had drifted to six ad-hoc durations
+     (0.15/0.2/0.24/0.25/0.45/0.5s) and four easing curves for what is really
+     three jobs, so the page read as several rhythms rather than one. Looping
+     decorative animations (2.6s-42s) keep their own timing: that belongs to
+     the thing being drawn, not to a UI scale. */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-state: 0.2s;   /* a flip in place: colour, opacity */
+  --dur-move: 0.3s;    /* a small move: hover lift, knob travel */
+  --dur-enter: 0.45s;  /* content arriving: reveals, transcript turns */
   --brand-grad: linear-gradient(135deg, #1e3a8a, #3b82f6);
   /* Statement blocks, one colour per theme: a warm deepened cream in light, the
      dark hero texture's own light blue in dark. The hero's flat cream
@@ -144,8 +155,8 @@ h1, h2, h3, h4 {
   opacity: 0;
   transform: translateY(14px);
   transition:
-    opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity var(--dur-enter) var(--ease),
+    transform var(--dur-enter) var(--ease);
 }
 .bv-rise[data-shown] {
   opacity: 1;
@@ -208,6 +219,84 @@ h1, h2, h3, h4 {
   .bv-marquee { animation: none; }
 }
 
+/* Wordmark: wide tracking with a mid dot between letters. The dots are drawn
+   by CSS on a separator pseudo-element rather than typed into the text, so the
+   accessible name stays "BridVance" (the letters are aria-hidden; a sr-only
+   span carries the real name). Tightened below sm, where nine spaced letters
+   plus separators would crowd the menu button off the pill. */
+.bv-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.bv-wordmark > span + span::before {
+  content: "·";
+  margin: 0 0.14em;
+  opacity: 0.8;
+}
+@media (min-width: 640px) {
+  .bv-wordmark {
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+  }
+  .bv-wordmark > span + span::before {
+    margin: 0 0.22em;
+  }
+}
+
+/* Hero entrance. The headline wipes up from behind a mask instead of fading —
+   one orchestrated move reads as craft where three parallel fades read as a
+   template. Applied to the whole <h1>, never to per-line spans inside it:
+   splitting the headline into elements changes its accessible name, which is
+   pinned by tests and was broken that way once already.
+   A CSS animation, not a JS-toggled transition. The rise pattern elsewhere
+   parks an element at opacity 0 until a rAF callback flips a flag, which is
+   survivable for a section heading and not for the page's <h1>: a deferred
+   frame (a background tab, a throttled first paint) leaves the headline
+   clipped out of existence. An animation needs no JS and always lands. */
+.bv-wipe {
+  animation: bv-wipe 0.95s var(--ease) 140ms both;
+}
+@keyframes bv-wipe {
+  from {
+    clip-path: inset(0 0 108% 0);
+    transform: translateY(0.16em);
+  }
+  to {
+    clip-path: inset(0 0 -25% 0);
+    transform: none;
+  }
+}
+
+/* Pointer parallax. Two layers drifting against each other give the hero
+   depth without a scroll listener or a physics library: one rAF-gated pointer
+   handler writes two custom properties on the section and CSS does the rest,
+   so it costs one transform per frame on the compositor. Disabled outright on
+   coarse pointers, where there is no cursor to follow. */
+.bv-par {
+  transform: translate3d(
+    calc(var(--bv-px, 0) * var(--bv-depth, 1) * 1px),
+    calc(var(--bv-py, 0) * var(--bv-depth, 1) * 1px),
+    0
+  );
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bv-wipe {
+    animation: none;
+  }
+  .bv-par {
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Particle word (hero headline): the real word stays in flow and only fades
    once the canvas above it has painted, so the headline is never blank — if
    the effect is skipped or bails, `data-hidden` is never set and the word just
@@ -226,7 +315,7 @@ h1, h2, h3, h4 {
   white-space: nowrap;
 }
 .bv-pw__text {
-  transition: opacity 0.45s ease-out;
+  transition: opacity var(--dur-enter) var(--ease);
 }
 .bv-pw__text[data-hidden] {
   opacity: 0;
@@ -406,7 +495,9 @@ h1, h2, h3, h4 {
   background: var(--sw-track);
   box-shadow: var(--sw-track-sh);
   cursor: pointer;
-  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  transition: background var(--dur-state),
+    border-color var(--dur-state),
+    box-shadow var(--dur-state);
   -webkit-tap-highlight-color: transparent;
 }
 .theme-switch__knob {
@@ -421,13 +512,13 @@ h1, h2, h3, h4 {
   background: var(--sw-knob);
   box-shadow: var(--sw-knob-sh);
   transform: translateX(var(--sw-knob-x));
-  transition: transform 0.24s cubic-bezier(0.4, 0.05, 0.2, 1), background 0.25s;
+  transition: transform var(--dur-move) var(--ease), background var(--dur-state);
 }
 .theme-switch__i {
   grid-area: 1 / 1;
   width: 13px;
   height: 13px;
-  transition: opacity 0.2s;
+  transition: opacity var(--dur-state);
 }
 .theme-switch__i--sun {
   color: #e8a23c;
@@ -526,7 +617,7 @@ h1, h2, h3, h4 {
   transform-origin: center top;
   /* Buried cards scale back a little, leaving their edges showing as a stack. */
   transform: scale(calc(1 - var(--bv-depth, 0) * 0.03));
-  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: transform var(--dur-enter) var(--ease);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .bv-stack__card {
@@ -573,7 +664,7 @@ h1, h2, h3, h4 {
 .bv-odo__reel {
   display: block;
   transform: translateY(calc(var(--bv-i, 0) * -1em));
-  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: transform var(--dur-enter) var(--ease);
 }
 .bv-odo__reel > span {
   display: block;
@@ -587,8 +678,8 @@ h1, h2, h3, h4 {
    it is the thing that says "this responds". */
 .bv-card {
   transition:
-    border-color 0.25s ease,
-    transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    border-color var(--dur-state) ease,
+    transform var(--dur-move) var(--ease);
 }
 @media (hover: hover) {
   .bv-card:hover {
@@ -604,7 +695,7 @@ h1, h2, h3, h4 {
 }
 @media (prefers-reduced-motion: reduce) {
   .bv-card {
-    transition: border-color 0.25s ease;
+    transition: border-color var(--dur-state) ease;
   }
   .bv-card:hover,
   .bv-card:focus-visible {
@@ -620,8 +711,8 @@ h1, h2, h3, h4 {
   opacity: 0;
   transform: translateY(6px);
   transition:
-    opacity 0.45s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity var(--dur-enter) var(--ease),
+    transform var(--dur-enter) var(--ease);
 }
 .bv-chat[data-shown] .bv-turn {
   opacity: 1;

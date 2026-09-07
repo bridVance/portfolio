@@ -16,6 +16,8 @@ test("renders a pure CSS backdrop-filter surface", () => {
     el.style.getPropertyValue("-webkit-backdrop-filter");
   expect(backdrop).toContain("blur");
 
-  // Base container classes are always applied and merged with `className`.
-  expect(el).toHaveClass("border-b", "border-line", "nav");
+  // The border is the caller's: a full-bleed bar wants an underline and the
+  // floating pill wants one all the way round, so LiquidGlass only merges what
+  // it is given.
+  expect(el).toHaveClass("nav");
 });

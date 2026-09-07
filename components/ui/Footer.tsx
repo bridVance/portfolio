@@ -8,11 +8,13 @@ export function Footer() {
         <p className="font-mono">BridVance — AI agents, assistants &amp; interfaces</p>
         <nav aria-label="Footer" className="flex flex-wrap gap-4">
           {ROUTES.map((r) => (
-            <Link key={r.href} href={r.href} className="hover:text-fg">
+            <Link key={r.href} href={r.href} className="-my-1 py-1 hover:text-fg">
               {r.label}
             </Link>
           ))}
-          <a href="#main" className="hover:text-fg">Back to top</a>
+          <a href="#main" className="-my-1 py-1 hover:text-fg">
+            Back to top
+          </a>
         </nav>
       </div>
     </footer>

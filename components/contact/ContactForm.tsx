@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { CONTACT } from "@/lib/contact";
 
@@ -20,6 +20,16 @@ export function ContactForm() {
   const [state, setState] = useState<State>("idle");
   const [errors, setErrors] = useState<Errors>({});
   const statusRef = useRef<HTMLOutputElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const listed = Object.entries(errors) as [keyof Errors, string][];
+
+  // After a failed submit focus sits on the button, so a field's
+  // aria-describedby error is never read and nothing tells a screen reader user
+  // what went wrong. Focus moves to this summary, and each line jumps to its
+  // field. The inline errors stay: the summary is in addition, not instead.
+  useEffect(() => {
+    if (listed.length) summaryRef.current?.focus();
+  }, [listed.length]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,10 +54,10 @@ export function ContactForm() {
         setState("idle");
       } else {
         setState("failed");
+        statusRef.current?.focus();
       }
     } catch {
       setState("failed");
-    } finally {
       statusRef.current?.focus();
     }
   }
@@ -74,6 +84,36 @@ export function ContactForm() {
       noValidate
       className="rounded-xl border border-line bg-surface p-6 md:p-8"
     >
+      {listed.length ? (
+        <div
+          ref={summaryRef}
+          tabIndex={-1}
+          role="alert"
+          aria-labelledby="form-error-title"
+          className="mb-6 rounded-lg border border-line bg-surface-2 p-4"
+        >
+          <p
+            id="form-error-title"
+            className="font-mono text-sm uppercase tracking-[0.14em] text-fg"
+          >
+            There is a problem
+          </p>
+          {/* oxlint-disable-next-line jsx-a11y/no-redundant-roles */}
+          <ul role="list" className="mt-2 flex flex-col gap-1">
+            {listed.map(([field, message]) => (
+              <li key={field}>
+                <a
+                  href={`#${field}`}
+                  className="font-body text-sm text-fg underline underline-offset-4"
+                >
+                  {message}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <div className="grid gap-5 md:grid-cols-2">
         <Field id="name" label="Your name" error={errors.name}>
           <input

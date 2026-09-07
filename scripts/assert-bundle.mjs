@@ -2,7 +2,10 @@ import { readFileSync, existsSync } from "node:fs";
 
 // Next 15.5.25 (webpack) emits the App Router first-load map here. Each value is
 // the ordered list of chunks a route ships on first load, relative to `.next/`.
-const manifestPath = ".next/app-build-manifest.json";
+// Follows next.config.mjs's distDir, so a verification build written
+// somewhere other than .next is the one that gets checked.
+const buildDir = process.env.BUILD_DIR || ".next";
+const manifestPath = `${buildDir}/app-build-manifest.json`;
 if (!existsSync(manifestPath)) {
   console.error("assert-bundle: run `next build` first");
   process.exit(1);
@@ -62,7 +65,7 @@ if (firstLoad.size < MIN_FIRST_LOAD_CHUNKS) {
 const offenders = [];
 for (const chunk of firstLoad) {
   if (!chunk.endsWith(".js")) continue;
-  const path = `.next/${chunk}`;
+  const path = `${buildDir}/${chunk}`;
   if (!existsSync(path)) continue;
   const hit = readFileSync(path, "utf8").match(THREE_MARKERS);
   if (hit) offenders.push(`${chunk} (matched ${JSON.stringify(hit[0])})`);

@@ -49,6 +49,7 @@ const vertexShader = /* glsl */ `
 const fragmentShader = /* glsl */ `
   precision highp float;
   uniform float uFresnelPower;
+  uniform float uTime;
   varying vec3 vNormalW;
   varying vec3 vViewDir;
   varying float vGrad;
@@ -69,15 +70,18 @@ const fragmentShader = /* glsl */ `
 
   void main() {
     vec3 v = normalize(vViewDir);
+    vec3 nW = normalize(vNormalW);
 
     // Flat per-facet normal from screen-space derivatives so the facets read.
     vec3 flatN = normalize(cross(dFdx(v), dFdy(v)));
-    float facet = 0.5 + 0.5 * dot(flatN, normalize(vec3(0.35, 0.75, 0.55)));
 
-    float fres = pow(
-      1.0 - clamp(dot(normalize(vNormalW), v), 0.0, 1.0),
-      uFresnelPower
-    );
+    // The key light drifts, so the highlight sweeps across the facets as the
+    // shard turns instead of sitting welded to one face. This is what sells it
+    // as a cut stone rather than a coloured solid.
+    vec3 key = normalize(vec3(0.35 + 0.42 * sin(uTime * 0.23), 0.78, 0.55));
+    float facet = 0.5 + 0.5 * dot(flatN, key);
+
+    float fres = pow(1.0 - clamp(dot(nW, v), 0.0, 1.0), uFresnelPower);
 
     // Vertical gradient, nudged per facet so neighbouring faces separate.
     vec3 col = gradient(clamp(vGrad + (facet - 0.5) * 0.14, 0.0, 1.0));
@@ -85,11 +89,21 @@ const fragmentShader = /* glsl */ `
     // Facet shading keeps the form legible.
     col *= 0.74 + 0.26 * facet;
 
-    // Deep violet gem edge so the shard stands hard off the light page.
-    col = mix(col, vec3(0.42, 0.24, 0.52), fres * 0.42);
+    // Thin-film rim. The edge used to be mixed toward a deep violet, which
+    // darkened the silhouette and pressed the shard flat into a pale page.
+    // Shifting hue with view angle and adding light instead lifts it off.
+    vec3 irid = 0.5 + 0.5 * cos(6.28318 * (vec3(0.0, 0.33, 0.67) + fres * 1.5 + 0.12));
+    col = mix(col, irid, fres * 0.42);
+    col += pow(fres, 3.0) * 0.30;
 
-    // Bright glints on the faces squarest to the key direction.
-    col += smoothstep(0.83, 1.0, facet) * 0.16;
+    // Blinn-Phong specular on the facet normal: a hard, moving glint.
+    vec3 h = normalize(key + v);
+    col += pow(max(dot(flatN, h), 0.0), 56.0) * 0.85;
+
+    // Faked transmission — faces turned away from the key bleed a little warm
+    // light, so the form reads as something light passes through.
+    float back = clamp(-dot(nW, key), 0.0, 1.0);
+    col += vec3(1.00, 0.58, 0.38) * pow(back, 2.0) * 0.16;
 
     gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
   }

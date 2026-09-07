@@ -35,6 +35,6 @@ test("low GPU tier renders the poster, not a live canvas", () => {
   // One island now: the field shares the shard's scene rather than having its
   // own canvas, so there is a single fallback.
   const srcs = [...container.querySelectorAll("img")].map((i) => i.getAttribute("src"));
-  expect(srcs).toEqual(["/posters/hero-shard.svg"]);
+  expect(srcs).toEqual(["/posters/hero-flow.svg"]);
   expect(container.querySelector("canvas")).toBeNull();
 });

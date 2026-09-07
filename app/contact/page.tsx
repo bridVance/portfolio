@@ -42,9 +42,13 @@ export default function ContactPage() {
               {/* oxlint-disable-next-line jsx-a11y/no-redundant-roles */}
               <ul role="list" className="mt-4 flex flex-col gap-3 font-body">
                 <li>
+                  {/* -my-1 py-1 makes this 24px tall, clearing the WCAG 2.2
+                      target minimum outright rather than leaning on the
+                      spacing exception. It is the path people use when the
+                      form fails, so it should not be a 16px sliver. */}
                   <a
                     href={`mailto:${CONTACT.email}`}
-                    className="text-fg underline underline-offset-4 hover:text-accent"
+                    className="-my-1 inline-block py-1 text-fg underline underline-offset-4 hover:text-accent"
                   >
                     {CONTACT.email}
                   </a>
