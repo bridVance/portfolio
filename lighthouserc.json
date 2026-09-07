@@ -3,7 +3,11 @@
     "collect": {
       "startServerCommand": "npm run start",
       "url": ["http://localhost:3000/", "http://localhost:3000/services"],
-      "numberOfRuns": 3
+      "numberOfRuns": 3,
+      "settings": {
+        "//": "GitHub runners restrict unprivileged user namespaces, so Chrome aborts with \"No usable sandbox!\" before Lighthouse ever loads a page.",
+        "chromeFlags": "--no-sandbox"
+      }
     },
     "assert": {
       "assertions": {
