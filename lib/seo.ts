@@ -20,6 +20,8 @@ export function pageMetadata(opts: {
   title: string;
   description: string;
   path: string;
+  /** Set on a route that is still only a header — see ROUTES `thin`. */
+  noindex?: boolean;
 }): Metadata {
   const url = new URL(opts.path, SITE_URL).toString();
   return {
@@ -27,6 +29,8 @@ export function pageMetadata(opts: {
     description: opts.description,
     alternates: { canonical: url },
     openGraph: { title: `${opts.title} — BridVance`, description: opts.description, url },
+    // follow, not nofollow: the page is thin, its links are still worth walking.
+    ...(opts.noindex ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

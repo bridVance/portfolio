@@ -5,6 +5,7 @@ export const metadata = pageMetadata({
   title: "Products",
   description:
     "Tools we build for ourselves and open up to everyone else — the studio's own AI products.",
+  noindex: true,
   path: "/products",
 });
 

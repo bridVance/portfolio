@@ -331,6 +331,102 @@ function Rebuild() {
   );
 }
 
+/** Multi-step work, with the step that fails routed rather than dropped. */
+function CustomAgent() {
+  const steps = ["read", "decide", "act"];
+  return (
+    <Frame>
+      <g stroke="var(--node-line)" strokeWidth="1.5" strokeLinecap="round">
+        <path d="M62 30 H86" className="bv-flow" />
+        <path d="M148 30 H172" className="bv-flow bv-flow--2" />
+        {/* the failure path, doubling back to be tried again */}
+        <path
+          d="M120 44 C 120 78, 40 78, 40 44"
+          strokeDasharray="4 4"
+          className="bv-flow bv-flow--rev"
+        />
+      </g>
+      {steps.map((s, i) => (
+        <g key={s}>
+          <rect x={4 + i * 84} y="16" width="58" height="28" rx="6" {...box} />
+          <text
+            x={14 + i * 84}
+            y="34"
+            className="font-mono"
+            fontSize="7.5"
+            fill="var(--muted)"
+          >
+            {s}
+          </text>
+        </g>
+      ))}
+      <rect x="176" y="16" width="80" height="28" rx="6" fill="var(--accent)" />
+      <text x="192" y="34" className="font-mono" fontSize="8" fill="var(--on-accent)">
+        done
+      </text>
+      <text x="70" y="92" className="font-mono" fontSize="7" fill="var(--muted)">
+        retry on failure
+      </text>
+    </Frame>
+  );
+}
+
+/** The console a team actually works in: rows, and the one being acted on. */
+function InternalTool() {
+  const rows = [22, 40, 58, 76];
+  return (
+    <Frame>
+      <rect x="4" y="4" width="252" height="96" rx="6" {...box} />
+      <rect x="4" y="4" width="252" height="14" rx="6" fill="var(--node-line)" opacity="0.4" />
+      {rows.map((y, i) => (
+        <g key={y} className={`bv-case bv-case--${i + 1}`}>
+          <rect x="12" y={y} width="150" height="6" rx="3" fill="var(--node-line)" />
+          <rect
+            x="176"
+            y={y - 4}
+            width="68"
+            height="14"
+            rx="4"
+            fill="var(--accent)"
+            className="bv-check"
+          />
+        </g>
+      ))}
+    </Frame>
+  );
+}
+
+/** Something you sell, with the model working inside it rather than beside it. */
+function ProductWork() {
+  return (
+    <Frame>
+      <rect x="4" y="4" width="252" height="96" rx="6" {...box} />
+      <rect x="16" y="16" width="90" height="6" rx="3" fill="var(--node-line)" />
+      <rect x="16" y="30" width="64" height="6" rx="3" fill="var(--node-line)" />
+      {/* the intelligent panel, inside the product's own frame */}
+      <rect
+        x="132"
+        y="16"
+        width="112"
+        height="72"
+        rx="6"
+        fill="var(--accent)"
+        opacity="0.14"
+        className="bv-ring"
+      />
+      <rect x="132" y="16" width="112" height="72" rx="6" {...box} />
+      <circle cx="146" cy="32" r="4" fill="var(--accent)" className="bv-pulse" />
+      <text x="156" y="35" className="font-mono" fontSize="7" fill="var(--muted)">
+        suggested
+      </text>
+      <rect x="142" y="46" width="92" height="6" rx="3" fill="var(--node-line)" />
+      <rect x="142" y="58" width="72" height="6" rx="3" fill="var(--node-line)" />
+      <rect x="142" y="70" width="84" height="6" rx="3" fill="var(--node-line)" />
+      <rect x="16" y="52" width="90" height="36" rx="5" {...box} />
+    </Frame>
+  );
+}
+
 const DIAGRAMS: Record<string, () => React.ReactElement> = {
   "Business website": Website,
   "Online store": Store,
@@ -343,6 +439,10 @@ const DIAGRAMS: Record<string, () => React.ReactElement> = {
   Retrieval,
   Evaluation,
   "Interface kit": InterfaceKit,
+  // Bespoke: these were the only offerings on the page with no visual at all.
+  "Custom agents": CustomAgent,
+  "Internal tools": InternalTool,
+  "Product work": ProductWork,
 };
 
 export function PartDiagram({ term }: { term: string }) {

@@ -10,7 +10,7 @@ import { ContactBand } from "@/components/home/ContactBand";
 export const metadata = pageMetadataHome({
   absoluteTitle: "BridVance — AI agents, assistants & the interfaces around them",
   description:
-    "An independent AI studio: agents and assistants that carry real work, the interfaces people meet them through, and products of our own.",
+    "An independent AI agency: agents and assistants that carry real work, the interfaces people meet them through, and products of our own.",
 });
 
 export default function HomePage() {

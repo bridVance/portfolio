@@ -23,6 +23,10 @@
   --node-line: #9aa3ba;
   /* A filled pill, which sits on the card rather than on the tray. */
   --chip: #e9edf6;
+  /* Muted text on --node. --muted is tuned against the page and the tray; on
+     the raised node it measured 3.67:1 in dark, under the 4.5:1 that small
+     text needs. Light already passes there, so it keeps --muted's value. */
+  --muted-strong: #586079;
   --brand-grad: linear-gradient(135deg, #1e3a8a, #3b82f6);
   /* Statement blocks, one colour per theme: a warm deepened cream in light, the
      dark hero texture's own light blue in dark. The hero's flat cream
@@ -54,6 +58,8 @@
     --node: #2b3859;
     --node-line: #5c6a94;
     --chip: #2b3859;
+    --muted-strong: #a9b1c6;
+  --muted-strong: #a9b1c6;
     /* The light blue the dark hero's crack texture is drawn in. */
     --statement-block: #6ea8ff;
     /* Heavier than light: the dark texture is drawn in a bright blue that
@@ -77,6 +83,7 @@
   --node: #2b3859;
   --node-line: #5c6a94;
   --chip: #2b3859;
+  --muted-strong: #a9b1c6;
   /* The light blue the dark hero's crack texture is drawn in. */
   --statement-block: #6ea8ff;
   /* Heavier than light: the dark texture is drawn in a bright blue that

@@ -68,3 +68,23 @@ test("the booking agent does not name its audience twice", () => {
     "Clinics, salons, studios, workshops"
   );
 });
+
+test("every offering renders a visual, not an empty card", () => {
+  const { container } = render(<ServicesPage />);
+  // PartDiagram keys its map by term in another file, so a term renamed here
+  // fails silently there — the card keeps its heading and loses its diagram.
+  // That has happened once already (a diagram whose rects had no size shipped
+  // as an empty box), so this asserts the outcome rather than the wiring.
+  const cards = [...container.querySelectorAll(".bv-card")];
+  expect(cards.length).toBeGreaterThan(0);
+  const bare = cards
+    // .bv-scroll is the site mock, which is divs rather than an <svg>.
+    .filter(
+      (c) =>
+        !c.querySelector("svg") &&
+        !c.querySelector(".bv-chat") &&
+        !c.querySelector(".bv-scroll")
+    )
+    .map((c) => c.querySelector("p")?.textContent);
+  expect(bare, `offerings with no diagram or transcript: ${bare.join(", ")}`).toEqual([]);
+});

@@ -25,6 +25,9 @@ jobs:
       # Ubuntu runner. Never run this locally — see README.
       - run: npx playwright install --with-deps chromium firefox webkit
 
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
@@ -52,7 +55,8 @@ jobs:
           name: playwright-report
           path: playwright-report/
 
-  # No `npm audit` gate here on purpose: stock next@15.5.x and the esbuild devDep
-  # pulled in by liquid-glass-js carry transitive advisories that are not
-  # remediable without a major bump. They are tracked for a pre-launch patch pass
-  # and kept moving by .github/dependabot.yml (weekly npm updates).
+  # The production dependency tree is clean and gated above. The remaining
+  # advisories are all dev-only, inside @lhci/cli's puppeteer tail, and have no
+  # upstream fix — 0.15.1 is the latest published version, and npm's suggested
+  # "fix" is a downgrade to 0.1.0. They never reach the shipped bundle. Kept
+  # moving by .github/dependabot.yml (weekly npm updates).

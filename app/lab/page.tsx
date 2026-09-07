@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 export const metadata = pageMetadata({
   title: "Lab",
   description: "Runnable experiments — agent demos, shaders, 3D and kinetic type.",
+  noindex: true,
   path: "/lab",
 });
 

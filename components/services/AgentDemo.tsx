@@ -81,7 +81,7 @@ export function AgentDemo({ turns, label }: { turns: readonly Turn[]; label: str
             >
               {turn.text}
               {turn.cite ? (
-                <span className="mt-1 block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted">
+                <span className="mt-1 block font-mono text-[0.65rem] uppercase tracking-[0.12em] text-muted-strong">
                   {turn.cite}
                 </span>
               ) : null}

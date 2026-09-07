@@ -19,7 +19,9 @@ export const metadata = pageMetadata({
  * and concrete enough to be worth reading. Each one ends on the thing the
  * agent actually did, since that is what a buyer is weighing.
  */
-const DEMOS: Record<string, readonly Turn[]> = {
+type PackagedTerm = (typeof TIERS)[1]["items"][number]["term"];
+
+const DEMOS: Record<PackagedTerm, readonly Turn[]> = {
   "Enquiry agent": [
     { from: "customer", text: "Do you deliver to Kochi?" },
     { from: "agent", text: "We do — 2 to 3 days, free over ₹1,500. What were you looking at?" },
@@ -63,7 +65,7 @@ const DEMOS: Record<string, readonly Turn[]> = {
  * is a bespoke build with a package's price on it.
  */
 const SPECS: Record<
-  string,
+  PackagedTerm,
   { handles: readonly string[]; builtFor: readonly string[] }
 > = {
   "Enquiry agent": {
@@ -231,6 +233,33 @@ const TIERS = [
   },
 ] as const;
 
+/**
+ * A read from a term-keyed map by a term that may not be in it.
+ */
+function entry<T>(map: Record<PackagedTerm, T>, term: string): T | undefined {
+  return (map as Record<string, T | undefined>)[term];
+}
+
+/**
+ * The visual half of an offering card. A packaged agent carries its scope, its
+ * audience and a transcript; everything else carries a diagram. Both maps are
+ * keyed by term, so this is the one place that has to know which is which.
+ */
+function ItemVisual({ term }: { term: string }) {
+  // Record<PackagedTerm, T> is what makes a renamed term a compile error: the
+  // literal has to cover every packaged term exactly. It also types a lookup as
+  // always succeeding, which is only true for a packaged term — so reads by an
+  // arbitrary term go through `entry`, which says `| undefined` and means it.
+  const spec = entry(SPECS, term);
+  const demo = entry(DEMOS, term);
+  return (
+    <>
+      {spec ? <AgentSpec handles={spec.handles} builtFor={spec.builtFor} /> : null}
+      {demo ? <AgentDemo turns={demo} label={term} /> : <PartDiagram term={term} />}
+    </>
+  );
+}
+
 export default function ServicesPage() {
   return (
     <>
@@ -279,17 +308,7 @@ export default function ServicesPage() {
                     <p className="mt-2 max-w-[46ch] font-body text-muted">
                       {item.line}
                     </p>
-                    {SPECS[item.term] ? (
-                      <AgentSpec
-                        handles={SPECS[item.term].handles}
-                        builtFor={SPECS[item.term].builtFor}
-                      />
-                    ) : null}
-                    {DEMOS[item.term] ? (
-                      <AgentDemo turns={DEMOS[item.term]} label={item.term} />
-                    ) : (
-                      <PartDiagram term={item.term} />
-                    )}
+                    <ItemVisual term={item.term} />
                   </div>
                 </Reveal>
               </li>

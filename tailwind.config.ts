@@ -11,6 +11,7 @@ const config: Config = {
         node: "var(--node)",
         "node-line": "var(--node-line)",
         chip: "var(--chip)",
+        "muted-strong": "var(--muted-strong)",
         fg: "var(--fg)",
         muted: "var(--muted)",
         line: "var(--line)",

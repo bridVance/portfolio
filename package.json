@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "assert:bundle": "node scripts/assert-bundle.mjs",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e",
+    "verify": "npm audit --omit=dev --audit-level=high && npm run typecheck && npm run lint && npm run test && npm run build && npm run assert:bundle && npm run e2e",
     "lhci": "lhci autorun",
     "e2e:visual": "cross-env VISUAL=1 playwright test e2e/home.visual.spec.ts --project=chromium-desktop"
   },
@@ -50,5 +50,8 @@
     "typescript": "^5",
     "vitest": "^4.1.11"
   },
-  "type": "module"
+  "type": "module",
+  "overrides": {
+    "postcss": "$postcss"
+  }
 }

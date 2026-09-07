@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 export const metadata = pageMetadata({
   title: "Work",
   description: "Selected BridVance projects — AI agents, automation, commerce and B2B portals.",
+  noindex: true,
   path: "/work",
 });
 

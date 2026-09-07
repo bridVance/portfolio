@@ -20,6 +20,7 @@ npm run verify
 
 | step            | command                          | what it checks                                        |
 | --------------- | -------------------------------- | ---------------------------------------------------- |
+| `audit`         | `npm audit --omit=dev`           | the shipped dependency tree, gated at `high`        |
 | `typecheck`     | `tsc --noEmit`                    | types                                               |
 | `lint`          | `oxlint .`                        | correctness lint (`.oxlintrc.json`)                 |
 | `test`          | `vitest run`                     | unit / component suite                             |
