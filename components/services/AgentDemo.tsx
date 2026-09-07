@@ -76,7 +76,7 @@ export function AgentDemo({ turns, label }: { turns: readonly Turn[]; label: str
                 "max-w-[86%] rounded-lg px-3 py-2 font-body text-sm leading-snug",
                 turn.from === "customer"
                   ? "bg-accent text-on-accent"
-                  : "bg-surface text-fg"
+                  : "bg-node text-fg"
               )}
             >
               {turn.text}

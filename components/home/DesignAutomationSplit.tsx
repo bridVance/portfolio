@@ -40,12 +40,16 @@ export function DesignAutomationSplit() {
         The agent, and the way people meet it
       </SectionHeading>
 
-      <div className="mt-10 grid divide-y divide-line border-y border-line md:grid-cols-2 md:divide-x md:divide-y-0">
+      <div className="mt-10 grid gap-5 md:grid-cols-2">
         {PANELS.map((panel, i) => (
-          <Reveal key={panel.href} delay={i * 0.08}>
+          <Reveal key={panel.href} delay={i * 0.08} className="h-full">
+            {/* The same card as the offerings on /services, rather than one
+                box divided down the middle. The lift and the transition come
+                from .bv-card now, so the utilities that used to do it here
+                would only fight it for specificity. */}
             <Link
               href={panel.href}
-              className="group flex h-full flex-col p-8 transition-transform duration-200 hover:-translate-y-0.5 focus-visible:-translate-y-0.5 md:p-12"
+              className="bv-card group flex h-full flex-col rounded-xl border border-line bg-surface p-6 md:p-8"
             >
               <span className="font-mono text-xs uppercase tracking-[0.18em] text-muted">
                 {panel.label}
@@ -57,7 +61,10 @@ export function DesignAutomationSplit() {
                 {panel.forWhom}
               </span>
 
-              <div className="mt-6">
+              {/* Both previews are white boxes with a border of their own.
+                  Against the page they read; on a white card they vanish, so
+                  they sit in the same recessed tray the service diagrams use. */}
+              <div className="mt-6 rounded-lg bg-surface-2 p-3">
                 <panel.Visual />
               </div>
 

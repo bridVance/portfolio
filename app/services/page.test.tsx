@@ -48,3 +48,23 @@ test("website building stands as its own offering, not an item under the agents"
     expect(container.textContent).toContain(item);
   }
 });
+
+test("each packaged agent says what it covers and the business it fits", () => {
+  render(<ServicesPage />);
+  // Five packaged agents, and only those: an accelerator is a part rather than
+  // a product, and bespoke work has no fixed audience to name.
+  expect(screen.getAllByRole("list", { name: "Handles" })).toHaveLength(5);
+  expect(screen.getAllByRole("list", { name: "Built for" })).toHaveLength(5);
+  // The audience is named as a kind of business, which is what a visitor can
+  // recognise themselves in — not as a job title or a market segment.
+  expect(screen.getByText("Clinics")).toBeInTheDocument();
+  expect(screen.getByText("Online stores")).toBeInTheDocument();
+});
+
+test("the booking agent does not name its audience twice", () => {
+  const { container } = render(<ServicesPage />);
+  // Its copy used to end on the same list its Built-for row now carries.
+  expect(container.textContent).not.toContain(
+    "Clinics, salons, studios, workshops"
+  );
+});

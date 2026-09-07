@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { AgentDemo, type Turn } from "@/components/services/AgentDemo";
 import { PartDiagram } from "@/components/services/PartDiagram";
+import { AgentSpec } from "@/components/services/AgentSpec";
 
 export const metadata = pageMetadata({
   title: "Services",
@@ -50,6 +51,71 @@ const DEMOS: Record<string, readonly Turn[]> = {
     { from: "customer", text: "Yes, sorry — got busy" },
     { from: "agent", text: "No trouble. That quote holds until Friday. Want me to keep it open?" },
   ],
+};
+
+/**
+ * The scope and the audience for each packaged agent. Kept beside DEMOS and
+ * keyed the same way, so only the packaged tier picks them up — the
+ * accelerators are parts rather than products, and "built for" does not mean
+ * anything for a bespoke build.
+ *
+ * Deliberately narrow lists. A packaged agent that claims to handle everything
+ * is a bespoke build with a package's price on it.
+ */
+const SPECS: Record<
+  string,
+  { handles: readonly string[]; builtFor: readonly string[] }
+> = {
+  "Enquiry agent": {
+    handles: [
+      "Product questions",
+      "Pricing",
+      "Delivery & shipping",
+      "Bulk quotes",
+      "Stock availability",
+      "Opening hours",
+    ],
+    builtFor: ["Retailers", "Wholesalers", "Manufacturers", "Service businesses"],
+  },
+  "Booking agent": {
+    handles: [
+      "Slot availability",
+      "Booking & rescheduling",
+      "Cancellations",
+      "Reminders",
+      "Staff calendars",
+    ],
+    builtFor: ["Clinics", "Salons", "Studios", "Workshops", "Tutors"],
+  },
+  "Order agent": {
+    handles: [
+      "Order status",
+      "Delivery tracking",
+      "Changes & cancellations",
+      "Returns",
+      "Invoices",
+    ],
+    builtFor: ["Online stores", "D2C brands", "Distributors", "Logistics"],
+  },
+  "Document assistant": {
+    handles: [
+      "Catalogue lookups",
+      "Policy questions",
+      "Spec sheets",
+      "Warranty terms",
+      "Internal manuals",
+    ],
+    builtFor: ["Manufacturers", "Dealers", "Insurers", "Support teams"],
+  },
+  "Follow-up agent": {
+    handles: [
+      "Quote chasing",
+      "Dormant enquiries",
+      "Renewal reminders",
+      "Re-engagement",
+    ],
+    builtFor: ["Sales teams", "Agencies", "B2B suppliers", "Service businesses"],
+  },
 };
 
 /**
@@ -99,7 +165,7 @@ const TIERS = [
       },
       {
         term: "Booking agent",
-        line: "Takes a booking end to end and writes it into the calendar you already use. Clinics, salons, studios, workshops.",
+        line: "Takes a booking end to end and writes it into the calendar you already use, and holds the slot while it does.",
       },
       {
         term: "Order agent",
@@ -213,6 +279,12 @@ export default function ServicesPage() {
                     <p className="mt-2 max-w-[46ch] font-body text-muted">
                       {item.line}
                     </p>
+                    {SPECS[item.term] ? (
+                      <AgentSpec
+                        handles={SPECS[item.term].handles}
+                        builtFor={SPECS[item.term].builtFor}
+                      />
+                    ) : null}
                     {DEMOS[item.term] ? (
                       <AgentDemo turns={DEMOS[item.term]} label={item.term} />
                     ) : (

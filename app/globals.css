@@ -13,6 +13,16 @@
   --accent-strong: #2563eb;
   --on-accent: #ffffff;
   --status: #0e9e76;
+  /* Diagram layer. --surface and --line cannot draw these: --surface is
+     lighter than --surface-2 in light and darker in dark, so a shape built
+     from them pops on the tray in one theme and vanishes in the other (it
+     measured 1.10:1 in dark). These are set against the tray in each theme
+     instead. --node is the shape, --node-line its edge and the connectors and
+     bars between shapes. */
+  --node: #ffffff;
+  --node-line: #9aa3ba;
+  /* A filled pill, which sits on the card rather than on the tray. */
+  --chip: #e9edf6;
   --brand-grad: linear-gradient(135deg, #1e3a8a, #3b82f6);
   /* Statement blocks, one colour per theme: a warm deepened cream in light, the
      dark hero texture's own light blue in dark. The hero's flat cream
@@ -41,6 +51,9 @@
     --accent-strong: #4f8dff;
     --on-accent: #0a1220;
     --status: #37e0a8;
+    --node: #2b3859;
+    --node-line: #5c6a94;
+    --chip: #2b3859;
     /* The light blue the dark hero's crack texture is drawn in. */
     --statement-block: #6ea8ff;
     /* Heavier than light: the dark texture is drawn in a bright blue that
@@ -61,6 +74,9 @@
   --accent-strong: #4f8dff;
   --on-accent: #0a1220;
   --status: #37e0a8;
+  --node: #2b3859;
+  --node-line: #5c6a94;
+  --chip: #2b3859;
   /* The light blue the dark hero's crack texture is drawn in. */
   --statement-block: #6ea8ff;
   /* Heavier than light: the dark texture is drawn in a bright blue that
@@ -328,24 +344,6 @@ h1, h2, h3, h4 {
   }
 }
 
-/* Hairline that draws itself left-to-right as its <Reveal> comes into view —
-   the rule rides the same `data-shown` flag the rise does, so it needs no JS of
-   its own and stays fully drawn when motion is reduced. */
-.bv-rule {
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-.bv-rise[data-shown] .bv-rule {
-  transform: scaleX(1);
-}
-@media (prefers-reduced-motion: reduce) {
-  .bv-rule {
-    transform: none;
-    transition: none;
-  }
-}
-
 /* Theme switch (nav): a compact neumorphic sun/moon slider. Track palette and
    knob position are driven by CSS vars that follow the resolved theme, so the
    knob is on the right side from first paint (the pre-hydration init script
@@ -591,11 +589,18 @@ h1, h2, h3, h4 {
     transform: translateY(-2px);
   }
 }
+/* A card that is itself a link earns the same response from the keyboard. The
+   global focus ring still draws; this is the lift that went with it. */
+.bv-card:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
 @media (prefers-reduced-motion: reduce) {
   .bv-card {
     transition: border-color 0.25s ease;
   }
-  .bv-card:hover {
+  .bv-card:hover,
+  .bv-card:focus-visible {
     transform: none;
   }
 }
@@ -685,9 +690,9 @@ h1, h2, h3, h4 {
   animation: bv-pick 4s ease-in-out infinite;
 }
 @keyframes bv-pick {
-  0%, 12% { stroke: var(--line); transform: none; }
+  0%, 12% { stroke: var(--node-line); transform: none; }
   26%, 62% { stroke: var(--accent); transform: translateY(-3px); }
-  76%, 100% { stroke: var(--line); transform: none; }
+  76%, 100% { stroke: var(--node-line); transform: none; }
 }
 .bv-paid {
   opacity: 0;

@@ -12,8 +12,8 @@
 import { SitePreview } from "@/components/home/SitePreview";
 
 const box = {
-  fill: "var(--surface)",
-  stroke: "var(--line)",
+  fill: "var(--node)",
+  stroke: "var(--node-line)",
 } as const;
 
 function Frame({ children }: { children: React.ReactNode }) {
@@ -31,7 +31,7 @@ function Channels() {
   const rows = [8, 34, 60, 86];
   return (
     <Frame>
-      <g stroke="var(--line)" strokeWidth="1.5" strokeLinecap="round">
+      <g stroke="var(--node-line)" strokeWidth="1.5" strokeLinecap="round">
         {rows.map((y, i) => (
           <path
             key={y}
@@ -72,7 +72,7 @@ function Channels() {
 function Systems() {
   return (
     <Frame>
-      <g stroke="var(--line)" strokeWidth="1.5" strokeLinecap="round">
+      <g stroke="var(--node-line)" strokeWidth="1.5" strokeLinecap="round">
         <path d="M74 34 H150" className="bv-flow" />
         <path d="M150 70 H74" className="bv-flow bv-flow--rev" />
       </g>
@@ -106,7 +106,7 @@ function Retrieval() {
           width={i === 3 ? 70 : 96}
           height="4"
           rx="2"
-          fill="var(--line)"
+          fill="var(--node-line)"
         />
       ))}
       {/* The sweep passes down the page; the marked line stays lit. */}
@@ -117,13 +117,13 @@ function Retrieval() {
         height="12"
         rx="3"
         fill="var(--accent)"
-        opacity="0.16"
+        opacity="0.28"
         className="bv-sweep"
       />
       <rect x="14" y="56" width="70" height="4" rx="2" fill="var(--accent)" />
       <path
         d="M132 58 H160"
-        stroke="var(--line)"
+        stroke="var(--node-line)"
         strokeWidth="1.5"
         className="bv-flow"
       />
@@ -236,7 +236,7 @@ function Store() {
       ))}
       <path
         d="M104 46 C 136 46, 140 52, 168 52"
-        stroke="var(--line)"
+        stroke="var(--node-line)"
         strokeWidth="1.5"
         strokeLinecap="round"
         className="bv-flow"
@@ -266,9 +266,9 @@ function Landing() {
   return (
     <Frame>
       <rect x="60" y="4" width="140" height="96" rx="6" {...box} />
-      <rect x="72" y="16" width="116" height="9" rx="3" fill="var(--line)" />
-      <rect x="72" y="31" width="90" height="5" rx="2" fill="var(--line)" />
-      <rect x="72" y="41" width="104" height="5" rx="2" fill="var(--line)" />
+      <rect x="72" y="16" width="116" height="9" rx="3" fill="var(--node-line)" />
+      <rect x="72" y="31" width="90" height="5" rx="2" fill="var(--node-line)" />
+      <rect x="72" y="41" width="104" height="5" rx="2" fill="var(--node-line)" />
       {/* The one thing the page is for. */}
       <rect
         className="bv-ring"
@@ -292,7 +292,7 @@ function Landing() {
       <text x="110" y="74" className="font-mono" fontSize="8" fill="var(--on-accent)">
         enquire
       </text>
-      <g stroke="var(--line)" strokeWidth="1.5" strokeLinecap="round">
+      <g stroke="var(--node-line)" strokeWidth="1.5" strokeLinecap="round">
         <path d="M8 34 C 34 34, 40 66, 88 70" className="bv-flow" />
         <path d="M8 92 C 34 92, 40 78, 88 74" className="bv-flow bv-flow--2" />
         <path d="M252 34 C 226 34, 220 66, 172 70" className="bv-flow bv-flow--3" />
@@ -308,9 +308,9 @@ function Rebuild() {
       <g className="bv-before">
         <rect x="6" y="8" width="248" height="88" rx="6" {...box} />
         {[14, 24, 34, 44, 54, 64, 74, 84].map((y) => (
-          <rect key={y} x="14" y={y} width={y % 3 ? 168 : 210} height="5" rx="2" fill="var(--line)" />
+          <rect key={y} x="14" y={y} width={y % 3 ? 168 : 210} height="5" rx="2" fill="var(--node-line)" />
         ))}
-        <rect x="196" y="14" width="48" height="30" rx="3" fill="var(--line)" opacity="0.7" />
+        <rect x="196" y="14" width="48" height="30" rx="3" fill="var(--node-line)" opacity="0.7" />
       </g>
       <g className="bv-after">
         <rect x="6" y="8" width="248" height="88" rx="6" {...box} />
@@ -323,8 +323,8 @@ function Rebuild() {
           fill="var(--accent)"
           opacity="0.85"
         />
-        <rect x="18" y="54" width="150" height="6" rx="3" fill="var(--line)" />
-        <rect x="18" y="68" width="112" height="6" rx="3" fill="var(--line)" />
+        <rect x="18" y="54" width="150" height="6" rx="3" fill="var(--node-line)" />
+        <rect x="18" y="68" width="112" height="6" rx="3" fill="var(--node-line)" />
         <rect x="150" y="18" width="86" height="56" rx="5" {...box} />
       </g>
     </Frame>

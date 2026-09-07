@@ -45,12 +45,15 @@ export function HowWeBuild() {
       {/* explicit role="list": Tailwind preflight's list-style:none strips the
           implicit list role in Safari/VoiceOver — restoring it is intentional. */}
       {/* oxlint-disable-next-line jsx-a11y/no-redundant-roles */}
-      <ul role="list" className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
+      <ul role="list" className="mt-10 grid gap-5 md:grid-cols-2">
         {PILLARS.map((pillar, i) => (
           <li key={pillar.term}>
-            <Reveal delay={i * 0.06}>
-              <div aria-hidden className="bv-rule h-px w-full bg-line" />
-              <div className="flex gap-4 pt-5">
+            {/* Same card as the service offerings (/services): a claim a client
+                can check is a thing in its own right, not a line under a rule.
+                h-full so "Craft" — one short sentence — does not leave its
+                neighbour hanging below it. */}
+            <Reveal delay={i * 0.06} className="h-full">
+              <div className="bv-card flex h-full gap-4 rounded-xl border border-line bg-surface p-5 md:p-6">
                 <span
                   aria-hidden
                   className="font-mono text-xs tabular-nums text-accent"

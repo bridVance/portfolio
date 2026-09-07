@@ -17,10 +17,10 @@ export function FlowPreview() {
   return (
     <div
       aria-hidden
-      className="grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-lg border border-line bg-surface p-4"
+      className="grid aspect-[4/3] w-full place-items-center overflow-hidden rounded-lg border border-node-line bg-node p-4"
     >
       <svg viewBox="0 0 260 180" className="w-full" fill="none">
-        <g stroke="var(--line)" strokeWidth="1.5" strokeLinecap="round">
+        <g stroke="var(--node-line)" strokeWidth="1.5" strokeLinecap="round">
           <path d="M74 90 H98" className="bv-flow" />
           <path d="M162 90 C174 90 174 42 186 42" className="bv-flow bv-flow--2" />
           <path
@@ -38,7 +38,7 @@ export function FlowPreview() {
               height="28"
               rx="6"
               fill="var(--surface-2)"
-              stroke="var(--line)"
+              stroke="var(--node-line)"
             />
             <circle
               cx={node.x + 11}
