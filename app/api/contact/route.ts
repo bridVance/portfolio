@@ -22,6 +22,15 @@ const MAX = { name: 120, email: 200, message: 4000 };
 // being protected: 3,000 a month goes quickly under a loop.
 const LIMIT = { limit: 5, windowMs: 10 * 60 * 1000 };
 
+// A per-caller limit does not protect the quota. Addresses are cheap, the email
+// plan is a monthly number rather than a per-sender one, and five every ten
+// minutes across enough addresses drains a month in an afternoon. This is the
+// breaker for the route as a whole: far above any real day's enquiries here,
+// and low enough that a runaway loop costs a day's allowance instead of the
+// plan. It refuses like the per-caller limit, so a real sender still gets the
+// mail-app fallback rather than a lost enquiry.
+const BURST = { limit: 60, windowMs: 60 * 60 * 1000 };
+
 // Refuse a body before parsing it. Beyond this the request cannot be valid
 // anyway, and request.json() would otherwise buffer whatever arrived first.
 const MAX_BODY_BYTES = 16 * 1024;
@@ -103,6 +112,14 @@ function refuse(status: number, error: string, extra: Record<string, unknown> = 
   return NextResponse.json({ error, ...extra }, { status, headers: NO_STORE });
 }
 
+/** Without Retry-After a refused client has no reason not to come straight back. */
+function tooMany(retryAfter: number) {
+  return NextResponse.json(
+    { error: "rate-limited", retryAfter },
+    { status: 429, headers: { ...NO_STORE, "Retry-After": String(retryAfter) } }
+  );
+}
+
 export async function POST(request: Request) {
   // Ordered by cost. Each check is cheaper than the one after it, and the rate
   // limit lands before the body is read so a flood costs a header lookup
@@ -119,13 +136,11 @@ export async function POST(request: Request) {
 
   if (crossOrigin(request)) return refuse(403, "cross-origin");
 
-  const limit = rateLimit(callerKey(request.headers), LIMIT);
-  if (!limit.ok) {
-    return NextResponse.json(
-      { error: "rate-limited", retryAfter: limit.retryAfter },
-      { status: 429, headers: { ...NO_STORE, "Retry-After": String(limit.retryAfter) } }
-    );
-  }
+  // Prefixed so a caller cannot land in the shared bucket by sending an
+  // x-forwarded-for of "global".
+  const limit = rateLimit(`ip:${callerKey(request.headers)}`, LIMIT);
+  if (!limit.ok) return tooMany(limit.retryAfter);
+
 
   // Content-Length is a claim, not a fact, so it is a cheap early out and the
   // measured length below is the actual limit.
@@ -178,6 +193,13 @@ export async function POST(request: Request) {
   if (Object.keys(errors).length) {
     return NextResponse.json({ errors }, { status: 400, headers: NO_STORE });
   }
+
+  // Charged here, not at the top of the handler: the quota is spent by sends,
+  // and a request refused for a bad address or a tripped honeypot costs
+  // nothing. Counting those against the budget would let anyone exhaust it
+  // with traffic that was never going to send an email.
+  const burst = rateLimit("global", BURST);
+  if (!burst.ok) return tooMany(burst.retryAfter);
 
   const key = process.env.RESEND_API_KEY;
   if (!key) {

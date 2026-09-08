@@ -43,6 +43,29 @@ const rupees = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 type Lines = Record<string, number>;
 const STORAGE = "bv-demo-sauce-cart";
 
+/**
+ * A cart out of storage is a claim, not a cart.
+ *
+ * `JSON.parse(raw) as Lines` asserts a shape rather than checking one. Anything
+ * under this key that is not what we last wrote — a stale entry from an earlier
+ * shape, most realistically — becomes a quantity that is not a number, and the
+ * total renders as the string "NaN" with a rupee sign in front of it. Keep the
+ * entries that are usable, drop the rest. Unknown ids need no handling here:
+ * they resolve to no product and fall out of the cart below.
+ */
+function readCart(raw: string): Lines {
+  const parsed: unknown = JSON.parse(raw);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+
+  const lines: Lines = {};
+  for (const [id, qty] of Object.entries(parsed)) {
+    if (typeof qty === "number" && Number.isInteger(qty) && qty > 0) {
+      lines[id] = Math.min(qty, MAX_PER_ITEM);
+    }
+  }
+  return lines;
+}
+
 export function Storefront() {
   const [lines, setLines] = useState<Lines>({});
   const [cartOpen, setCartOpen] = useState(false);
@@ -54,7 +77,7 @@ export function Storefront() {
     try {
       const raw = localStorage.getItem(STORAGE);
       // oxlint-disable-next-line react/set-state-in-effect
-      if (raw) setLines(JSON.parse(raw) as Lines);
+      if (raw) setLines(readCart(raw));
     } catch {
       /* private mode or cleared storage — an empty cart is a fine fallback */
     }

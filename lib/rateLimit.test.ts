@@ -48,3 +48,26 @@ test("an empty header falls through instead of becoming the key", () => {
   expect(callerKey(headers)).toBe("203.0.113.9");
   expect(callerKey(new Headers())).toBe("unknown");
 });
+
+test("the tracked-caller ceiling holds even when nothing has expired", () => {
+  // The case the old prune missed: a flood inside one window leaves no expired
+  // bucket to delete, so deleting expired buckets bounds nothing.
+  const wide = { limit: 1, windowMs: 60_000 };
+  for (let i = 0; i < 10_050; i += 1) rateLimit(`caller-${i}`, wide, 0);
+
+  expect(rateLimit("one-more", wide, 0).ok).toBe(true);
+  // Dropping everything is the accepted cost: each live caller gets one fresh
+  // allowance, the same as a cold start.
+  expect(rateLimit("caller-0", wide, 0).ok).toBe(true);
+});
+
+test("separate budgets do not share a bucket", () => {
+  // The route runs a per-caller limit and a global one through the same store.
+  const perCaller = { limit: 2, windowMs: 1000 };
+  const global = { limit: 5, windowMs: 1000 };
+
+  rateLimit("ip:1.2.3.4", perCaller, 0);
+  rateLimit("ip:1.2.3.4", perCaller, 0);
+  expect(rateLimit("ip:1.2.3.4", perCaller, 0).ok).toBe(false);
+  expect(rateLimit("global", global, 0).ok).toBe(true);
+});

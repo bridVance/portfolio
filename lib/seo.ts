@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
+import { envOr } from "./env";
 
 const EXAMPLE_URL = "https://bridvance.example";
-const SITE_URL = process.env.SITE_URL ?? EXAMPLE_URL;
+// envOr, not `??`: a variable set to an empty string is not undefined, and the
+// fallback would be skipped in favour of "" — which is what silently broke
+// enquiry delivery. The production guard below still refuses a blank value
+// outright; this only stops dev and test crashing on `new URL(path, "")`.
+const SITE_URL = envOr("SITE_URL", EXAMPLE_URL);
 
 // Fail a real production build loudly if the deploy target was never configured.
 // Dev / test / Vitest are untouched (NODE_ENV !== "production"). CI sets SITE_URL

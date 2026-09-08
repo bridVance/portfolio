@@ -23,14 +23,20 @@ type Bucket = { count: number; resetAt: number };
 
 const buckets = new Map<string, Bucket>();
 
-// Bounds memory if a flood arrives from many addresses: without this the Map
-// grows once per distinct caller and nothing ever removes it.
+// Ceiling on distinct callers held at once. Without it the Map grows once per
+// address and nothing ever removes an entry.
 const MAX_TRACKED = 10_000;
 
 function prune(now: number): void {
   for (const [key, bucket] of buckets) {
     if (now >= bucket.resetAt) buckets.delete(key);
   }
+  // Expiry alone is not a bound, which is what this used to claim to be. A
+  // flood from enough addresses inside one window leaves nothing expired to
+  // delete, and the Map grows without limit anyway. Dropping everything costs
+  // each live caller one fresh allowance — exactly what a cold start already
+  // does, and already accounted for at the top of this file.
+  if (buckets.size > MAX_TRACKED) buckets.clear();
 }
 
 export type RateLimitResult = {
