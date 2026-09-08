@@ -15,6 +15,12 @@ const ROUTES = ["/", "/work", "/services", "/products", "/lab", "/contact"];
 // configured number is checked separately and does not rely on this.
 const INDIAN_MOBILE = /\+\s?91[\s-]?\d{5}[\s-]?\d{5}|\+\s?91[\s-]?\d{10}/;
 
+// Provider keys are the other secret that must never ship. Resend keys are
+// `re_` plus a long token; the same mistake that would expose a phone number —
+// a NEXT_PUBLIC_ prefix, a value pasted into a component — exposes these too,
+// and this one is far more costly.
+const PROVIDER_KEY = /re_[A-Za-z0-9]{6,}_[A-Za-z0-9]{20,}|SK[a-f0-9]{32}/;
+
 test("no phone number reaches the browser on any route", async ({ page, request }) => {
   const configured = process.env.CONTACT_PHONE?.replace(/\D/g, "");
   const seenScripts = new Set<string>();
@@ -24,6 +30,7 @@ test("no phone number reaches the browser on any route", async ({ page, request 
     const html = (await res?.text()) ?? "";
 
     expect(html, `${route} HTML contains a phone number`).not.toMatch(INDIAN_MOBILE);
+    expect(html, `${route} HTML contains a provider key`).not.toMatch(PROVIDER_KEY);
     if (configured) {
       expect(html.replace(/\D/g, ""), `${route} HTML contains the studio number`)
         .not.toContain(configured);
@@ -41,6 +48,7 @@ test("no phone number reaches the browser on any route", async ({ page, request 
   for (const src of seenScripts) {
     const body = await (await request.get(src)).text();
     expect(body, `${src} contains a phone number`).not.toMatch(INDIAN_MOBILE);
+    expect(body, `${src} contains a provider key`).not.toMatch(PROVIDER_KEY);
     if (configured) {
       expect(body.replace(/\D/g, ""), `${src} contains the studio number`)
         .not.toContain(configured);
@@ -78,8 +86,13 @@ test("every enquiry is addressed to the studio inbox", async ({ page, request })
     expect(res.ok()).toBe(true);
   }
 
-  // And a failed send must hand the visitor their own enquiry, pre-written,
-  // rather than an address to retype into.
+  // The fallback is forced rather than waited for: once a provider key is
+  // configured the route succeeds, and a test that only passes while delivery
+  // is broken is worse than no test.
+  await page.route("**/api/contact", (r) =>
+    r.fulfill({ status: 502, contentType: "application/json", body: "{}" })
+  );
+
   await page.goto("/contact");
   await page.getByLabel("Your name").fill("Asha Menon");
   await page.getByLabel("Email").fill("asha@example.com");
