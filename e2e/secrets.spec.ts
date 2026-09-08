@@ -61,3 +61,35 @@ test("the contact API never echoes the number back", async ({ request }) => {
     if (configured) expect(body.replace(/\D/g, "")).not.toContain(configured);
   }
 });
+
+test("every enquiry is addressed to the studio inbox", async ({ page, request }) => {
+  // The destination is a constant with an env override. A typo in either would
+  // send enquiries somewhere nobody reads, and nothing else would notice.
+  const res = await request.post("/api/contact", {
+    data: { name: "Asha", email: "asha@example.com", message: "Hello" },
+  });
+  const body = await res.json();
+
+  // Unconfigured, the route must name the inbox rather than fail silently.
+  if (res.status() === 503) {
+    expect(body.error).toBe("not-configured");
+    expect(body.email).toBe("bridvance@gmail.com");
+  } else {
+    expect(res.ok()).toBe(true);
+  }
+
+  // And a failed send must hand the visitor their own enquiry, pre-written,
+  // rather than an address to retype into.
+  await page.goto("/contact");
+  await page.getByLabel("Your name").fill("Asha Menon");
+  await page.getByLabel("Email").fill("asha@example.com");
+  await page.getByLabel(/what do you want handled/i).fill("Forty enquiries a day.");
+  await page.getByRole("button", { name: /send enquiry/i }).click();
+
+  const fallback = page.getByRole("link", { name: /send it from your mail app/i });
+  await expect(fallback).toBeVisible();
+  const href = (await fallback.getAttribute("href")) ?? "";
+  expect(href).toContain("mailto:bridvance@gmail.com");
+  expect(decodeURIComponent(href)).toContain("Forty enquiries a day.");
+  expect(decodeURIComponent(href)).toContain("asha@example.com");
+});

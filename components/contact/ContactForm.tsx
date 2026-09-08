@@ -16,9 +16,25 @@ const field =
  * one thing on the site that must not quietly fail, so every failure path ends
  * with the email address rather than a shrug.
  */
+/**
+ * A mailto carrying the enquiry the visitor already typed.
+ *
+ * The fallback used to be the address on its own, which asks someone to retype
+ * everything into their mail client — most will not, and the enquiry is lost.
+ * This opens their mail app with it already written, so a provider outage
+ * costs one click rather than the lead.
+ */
+function mailtoFor(to: string, d: { name: string; email: string; message: string }) {
+  const body = `${d.message}\n\n—\n${d.name}\n${d.email}`;
+  return `mailto:${to}?subject=${encodeURIComponent(
+    `Enquiry from ${d.name || "the website"}`
+  )}&body=${encodeURIComponent(body)}`;
+}
+
 export function ContactForm() {
   const [state, setState] = useState<State>("idle");
   const [errors, setErrors] = useState<Errors>({});
+  const [draft, setDraft] = useState({ name: "", email: "", message: "" });
   const statusRef = useRef<HTMLOutputElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const listed = Object.entries(errors) as [keyof Errors, string][];
@@ -35,6 +51,11 @@ export function ContactForm() {
     e.preventDefault();
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
+    setDraft({
+      name: String(data.name ?? ""),
+      email: String(data.email ?? ""),
+      message: String(data.message ?? ""),
+    });
     setState("sending");
     setErrors({});
     try {
@@ -170,14 +191,14 @@ export function ContactForm() {
         <output ref={statusRef} tabIndex={-1} className="font-body text-sm text-muted">
           {state === "failed" ? (
             <>
-              That did not send. Email{" "}
+              That did not send.{" "}
               <a
-                className="text-fg underline underline-offset-4"
-                href={`mailto:${CONTACT.email}`}
+                className="font-medium text-fg underline underline-offset-4"
+                href={mailtoFor(CONTACT.email, draft)}
               >
-                {CONTACT.email}
+                Send it from your mail app
               </a>{" "}
-              and we will pick it up there.
+              &mdash; we have filled it in already. It goes to {CONTACT.email}.
             </>
           ) : null}
         </output>
