@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { CONTACT } from "@/lib/contact";
+import { envOr } from "@/lib/env";
 import { callerKey, rateLimit } from "@/lib/rateLimit";
 
 /**
@@ -192,8 +193,8 @@ export async function POST(request: Request) {
     body: JSON.stringify({
       // Resend's shared sender, which needs no verified domain. Swap for a
       // studio address once one exists.
-      from: process.env.CONTACT_FROM ?? "BridVance <onboarding@resend.dev>",
-      to: [process.env.CONTACT_TO ?? CONTACT.email],
+      from: envOr("CONTACT_FROM", "BridVance <onboarding@resend.dev>"),
+      to: [envOr("CONTACT_TO", CONTACT.email)],
       reply_to: email,
       subject: `Enquiry from ${name}`,
       text: `${name} <${email}>
