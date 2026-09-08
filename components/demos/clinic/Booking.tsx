@@ -47,7 +47,11 @@ export function Booking() {
         .clinic {
           --ink: #164E63;
           --cyan: #0891B2;
-          --green: #059669;
+          /* The skill's #059669 measures 3.62 on this ground and its #0891B2
+             carries white at 3.68 — both under the 4.5 its own rules require.
+             Same hues, darkened until they pass. */
+          --green: #047857;
+          --cyan-deep: #0E7490;
           --paper: #ECFEFF;
           --card: #FFFFFF;
           --line: #A5F3FC;
@@ -236,7 +240,7 @@ export function Booking() {
           </p>
           <a
             href="#book"
-            className="mt-6 inline-block rounded-full bg-[var(--cyan)] px-7 py-3 text-sm font-medium text-white"
+            className="mt-6 inline-block rounded-full bg-[var(--cyan-deep)] px-7 py-3 text-sm font-medium text-white"
           >
             Book online instead
           </a>

@@ -42,6 +42,7 @@ const tierFor = (qty: number) => TIERS.find((t) => qty >= t.min)!;
 
 export function Portal() {
   const [qty, setQty] = useState<Record<string, number>>({ "BV-1010": 60 });
+  const [submitted, setSubmitted] = useState(false);
 
   const lines = useMemo(
     () =>
@@ -280,16 +281,40 @@ export function Portal() {
                     order or clear an invoice to proceed.
                   </output>
                 ) : null}
-                <button
-                  type="button"
-                  disabled={overCredit}
-                  className="mt-4 w-full rounded-md bg-[var(--blue)] px-4 py-2.5 text-sm text-white disabled:cursor-not-allowed disabled:opacity-45"
-                >
-                  Submit order
-                </button>
-                <p className="mt-2 text-center text-xs text-[var(--muted)]">
-                  Demo &mdash; no order is placed
-                </p>
+                {submitted ? (
+                  <div className="mt-4 rounded-md border p-3" style={{ borderColor: "var(--ok)", background: "#F0FDF4" }}>
+                    <p className="text-sm font-semibold" style={{ color: "var(--ok)" }}>
+                      Order SO-4482 raised
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--muted)]">
+                      Demo &mdash; nothing was submitted.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSubmitted(false);
+                        setQty({});
+                      }}
+                      className="mt-3 w-full rounded-md border border-[var(--line)] px-4 py-2 text-sm"
+                    >
+                      Start a new order
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      disabled={overCredit}
+                      onClick={() => setSubmitted(true)}
+                      className="mt-4 w-full rounded-md bg-[var(--blue)] px-4 py-2.5 text-sm text-white disabled:cursor-not-allowed disabled:opacity-45"
+                    >
+                      Submit order
+                    </button>
+                    <p className="mt-2 text-center text-xs text-[var(--muted)]">
+                      Demo &mdash; no order is placed
+                    </p>
+                  </>
+                )}
               </>
             )}
           </aside>

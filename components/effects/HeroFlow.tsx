@@ -205,7 +205,11 @@ export default function HeroFlow() {
       aria-hidden
     >
       <Canvas
-        dpr={high ? [1, 2] : [1, 1.5]}
+        // Capped at 1.5 rather than 2. Thousands of soft blended points are
+        // fill-rate bound, and fill scales with the square of pixel density —
+        // at DPR 2 this costs more than twice what it does at 1.5, for a cloud
+        // with no hard edges to sharpen.
+        dpr={[1, 1.5]}
         frameloop={reduced ? "demand" : "always"}
         camera={{ position: [0, 0, 5.2], fov: 42 }}
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}

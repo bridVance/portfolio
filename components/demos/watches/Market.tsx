@@ -76,6 +76,7 @@ const rupees = (n: number) => `₹${(n / 100000).toFixed(2)} L`;
 
 export function Market() {
   const [openId, setOpenId] = useState<string>(LISTINGS[0].id);
+  const [consigning, setConsigning] = useState(false);
   const open = LISTINGS.find((l) => l.id === openId)!;
 
   return (
@@ -83,7 +84,9 @@ export function Market() {
       <style>{`
         .watch {
           --violet: #7C3AED;
-          --green: #16A34A;
+          /* The skill's #16A34A carries white at 3.3 and 60% white on the
+             violet lands at 3.01 — both under 4.5. Same hues, darkened. */
+          --green: #15803D;
           --ink: #4C1D95;
           --paper: #FAF5FF;
           --card: #FFFFFF;
@@ -240,13 +243,33 @@ export function Market() {
             We take twelve percent, we photograph it properly, and we will not
             list it until the archive comes back.
           </p>
-          <button
-            type="button"
-            className="ui mt-7 bg-white px-8 py-3.5 text-sm text-[var(--ink)]"
-          >
-            Consign a watch
-          </button>
-          <p className="mt-3 text-sm text-white/60">Demo &mdash; nothing is submitted</p>
+          {consigning ? (
+            <output className="mt-7 block border-2 border-white/40 p-5">
+              <span className="ui block text-lg text-white">What happens next</span>
+              <span className="mt-2 block text-white/80">
+                We would ask for photographs and the serial, then come back
+                within two days with a valuation. Demo &mdash; nothing was sent.
+              </span>
+              <button
+                type="button"
+                onClick={() => setConsigning(false)}
+                className="ui mt-4 border border-white/40 px-5 py-2 text-sm text-white"
+              >
+                Close
+              </button>
+            </output>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => setConsigning(true)}
+                className="ui mt-7 bg-white px-8 py-3.5 text-sm text-[var(--ink)]"
+              >
+                Consign a watch
+              </button>
+              <p className="mt-3 text-sm text-white/85">Demo &mdash; nothing is submitted</p>
+            </>
+          )}
         </div>
       </section>
 

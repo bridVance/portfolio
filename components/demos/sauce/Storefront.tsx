@@ -94,6 +94,10 @@ export function Storefront() {
       <style>{`
         .sauce {
           --orange: #EA580C;
+          /* The skill pairs #EA580C with #FFF7ED, which measures 3.35:1 and
+             fails its own priority-1 rule at small sizes. The bright orange
+             stays for fills and large type; small text uses this. */
+          --orange-ink: #9A3412;
           --blue: #2563EB;
           --ink: #0F172A;
           --paper: #FFF7ED;
@@ -133,9 +137,9 @@ export function Storefront() {
             </span>
           </div>
           <nav aria-label="Shop" className="hidden gap-7 text-sm sm:flex">
-            <a href="#shop" className="hover:text-[var(--orange)]">Shop</a>
-            <a href="#features" className="hover:text-[var(--orange)]">What is in it</a>
-            <a href="#cta" className="hover:text-[var(--orange)]">Stockists</a>
+            <a href="#shop" className="hover:text-[var(--orange-ink)]">Shop</a>
+            <a href="#features" className="hover:text-[var(--orange-ink)]">What is in it</a>
+            <a href="#cta" className="hover:text-[var(--orange-ink)]">Stockists</a>
           </nav>
           <button
             type="button"
@@ -152,7 +156,7 @@ export function Storefront() {
       {/* Hero: headline and image, flush left on a hard grid. */}
       <section className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-12 md:py-24">
         <div className="md:col-span-7">
-          <p className="text-[0.68rem] uppercase tracking-[0.28em] text-[var(--orange)]">
+          <p className="text-[0.68rem] uppercase tracking-[0.28em] text-[var(--orange-ink)]">
             Six sauces · Cooked in Kerala
           </p>
           <h1 className="mt-6 text-[clamp(3.5rem,11vw,8rem)]">
@@ -201,7 +205,7 @@ export function Storefront() {
         <div className="rule" />
         <p className="py-10 text-[clamp(1.5rem,3.4vw,2.6rem)] leading-tight md:max-w-[24ch]">
           Most sauces are thickened, coloured and shelf-stabilised.
-          <span className="text-[var(--orange)]"> Ours are cooked, bottled and sold.</span>
+          <span className="text-[var(--orange-ink)]"> Ours are cooked, bottled and sold.</span>
         </p>
       </section>
 
@@ -217,7 +221,7 @@ export function Storefront() {
             ["04", "Time", "Six hours on low heat, which is the whole trick."],
           ].map(([n, h, b]) => (
             <li key={n}>
-              <p className="text-[0.68rem] tracking-[0.2em] text-[var(--orange)]">{n}</p>
+              <p className="text-[0.68rem] tracking-[0.2em] text-[var(--orange-ink)]">{n}</p>
               <h3 className="display mt-3 text-3xl">{h}</h3>
               <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">{b}</p>
             </li>
@@ -243,7 +247,7 @@ export function Storefront() {
                 <span className="text-lg tabular-nums">{rupees(p.price)}</span>
               </div>
               <p className="mt-1.5 text-sm text-[var(--muted)]">{p.note}</p>
-              <p className="mt-2 text-[0.68rem] uppercase tracking-[0.16em] text-[var(--orange)]">
+              <p className="mt-2 text-[0.68rem] uppercase tracking-[0.16em] text-[var(--orange-ink)]">
                 Heat {p.heat} of 5
               </p>
               <button
@@ -283,9 +287,14 @@ export function Storefront() {
 
       <aside
         id="sauce-cart"
-        hidden={!cartOpen}
         aria-label="Your cart"
-        className="fixed inset-y-0 right-0 z-30 flex w-full max-w-sm flex-col border-l-2 border-[var(--ink)] bg-[var(--paper)]"
+        // Not the `hidden` attribute: [hidden]{display:none} arrives with
+        // preflight and Tailwind's `flex` comes after it at equal specificity,
+        // so display:flex won and the panel would not close. The display class
+        // carries the state instead.
+        className={`fixed inset-y-0 right-0 z-30 w-full max-w-sm flex-col border-l-2 border-[var(--ink)] bg-[var(--paper)] ${
+          cartOpen ? "flex" : "hidden"
+        }`}
       >
         <div className="flex items-center justify-between border-b-2 border-[var(--ink)] px-4 py-3">
           <h2 className="text-3xl">Your cart</h2>
@@ -375,7 +384,7 @@ export function Storefront() {
               </div>
             </dl>
             {totals.shipping > 0 ? (
-              <p className="mt-2 text-[0.68rem] uppercase tracking-[0.14em] text-[var(--orange)]">
+              <p className="mt-2 text-[0.68rem] uppercase tracking-[0.14em] text-[var(--orange-ink)]">
                 {rupees(FREE_SHIPPING_OVER - totals.subtotal)} more for free delivery
               </p>
             ) : null}

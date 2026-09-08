@@ -37,11 +37,26 @@ export function Store() {
   const [basket, setBasket] = useState<Record<string, number>>({});
   const [sent, setSent] = useState(false);
 
+  const [basketOpen, setBasketOpen] = useState(false);
   const factor = WEIGHTS.find((w) => w.id === weight)!.factor;
-  const count = useMemo(
-    () => Object.values(basket).reduce((n, q) => n + q, 0),
+
+  // Keyed by variety *and* pack size: a 250g and a 1kg of the same date are
+  // different lines at different prices, and collapsing them would quietly
+  // charge the wrong amount.
+  const lines = useMemo(
+    () =>
+      Object.entries(basket).flatMap(([key, qty]) => {
+        const [id, w] = key.split("|");
+        const v = VARIETIES.find((x) => x.id === id);
+        const wt = WEIGHTS.find((x) => x.id === w);
+        if (!v || !wt || qty <= 0) return [];
+        const unit = v.base * wt.factor;
+        return [{ key, name: v.name, size: wt.label, qty, unit, line: unit * qty }];
+      }),
     [basket]
   );
+  const count = lines.reduce((n, l) => n + l.qty, 0);
+  const subtotal = lines.reduce((n, l) => n + l.line, 0);
 
   return (
     <div className="dates min-h-screen">
@@ -88,9 +103,15 @@ export function Store() {
             <a href="#uses" className="hover:text-[var(--gold)]">Ways to use</a>
             <a href="#wholesale" className="hover:text-[var(--gold)]">Wholesale</a>
           </nav>
-          <span className="rounded-full border border-[var(--line)] px-4 py-1.5 text-sm">
+          <button
+            type="button"
+            onClick={() => setBasketOpen((v) => !v)}
+            aria-expanded={basketOpen}
+            aria-controls="dates-basket"
+            className="rounded-full border border-[var(--line)] px-4 py-1.5 text-sm transition-colors hover:border-[var(--gold)]"
+          >
             Basket · {count}
-          </span>
+          </button>
         </div>
       </header>
 
@@ -176,9 +197,11 @@ export function Store() {
                   <span className="text-lg tabular-nums">{rupees(v.base * factor)}</span>
                   <button
                     type="button"
-                    onClick={() =>
-                      setBasket((b) => ({ ...b, [v.id]: (b[v.id] ?? 0) + 1 }))
-                    }
+                    onClick={() => {
+                      const key = `${v.id}|${weight}`;
+                      setBasket((b) => ({ ...b, [key]: (b[key] ?? 0) + 1 }));
+                      setBasketOpen(true);
+                    }}
                     className="rounded-full border border-[var(--stone)] px-4 py-2 text-sm transition-colors hover:bg-[var(--stone)] hover:text-white"
                   >
                     Add<span className="sr-only"> {v.name}, {WEIGHTS.find((w) => w.id === weight)!.label}</span>
@@ -293,6 +316,92 @@ export function Store() {
           Demo site · BridVance
         </p>
       </footer>
+
+      <aside
+        id="dates-basket"
+        aria-label="Your basket"
+        className={`glass fixed inset-y-0 right-0 z-30 w-full max-w-sm flex-col border-l border-[var(--line)] ${
+          basketOpen ? "flex" : "hidden"
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-[var(--line)] px-4 py-3">
+          <h2 className="display text-xl">Your basket</h2>
+          <button
+            type="button"
+            onClick={() => setBasketOpen(false)}
+            className="rounded-full border border-[var(--line)] px-3 py-1.5 text-sm"
+          >
+            Close
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-4 py-4">
+          {lines.length === 0 ? (
+            <p className="text-sm text-[var(--muted)]">
+              Nothing yet. Sukkari is the one people come back for.
+            </p>
+          ) : (
+            /* oxlint-disable-next-line jsx-a11y/no-redundant-roles */
+            <ul role="list" className="flex flex-col gap-4">
+              {lines.map((l) => (
+                <li key={l.key} className="border-b border-[var(--line)] pb-3">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span>
+                      {l.name}{" "}
+                      <span className="text-[var(--muted)]">· {l.size}</span>
+                    </span>
+                    <span className="tabular-nums">{rupees(l.line)}</span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label={`One fewer ${l.name} ${l.size}`}
+                      onClick={() =>
+                        setBasket((b) => {
+                          const next = { ...b };
+                          if ((next[l.key] ?? 0) <= 1) delete next[l.key];
+                          else next[l.key] -= 1;
+                          return next;
+                        })
+                      }
+                      className="h-7 w-7 rounded-full border border-[var(--line)]"
+                    >
+                      &minus;
+                    </button>
+                    <span className="w-6 text-center text-sm tabular-nums">{l.qty}</span>
+                    <button
+                      type="button"
+                      aria-label={`One more ${l.name} ${l.size}`}
+                      onClick={() =>
+                        setBasket((b) => ({ ...b, [l.key]: (b[l.key] ?? 0) + 1 }))
+                      }
+                      className="h-7 w-7 rounded-full border border-[var(--line)]"
+                    >
+                      +
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {lines.length > 0 ? (
+          <div className="border-t border-[var(--line)] px-4 py-4">
+            <div className="flex justify-between text-base">
+              <span>Subtotal</span>
+              <span className="tabular-nums">{rupees(subtotal)}</span>
+            </div>
+            <button
+              type="button"
+              className="mt-4 w-full rounded-full bg-[var(--gold)] px-5 py-3 text-sm text-white"
+            >
+              Checkout
+            </button>
+            <p className="mt-2 text-center text-xs text-[var(--muted)]">
+              Demo &mdash; no payment is taken
+            </p>
+          </div>
+        ) : null}
+      </aside>
     </div>
   );
 }

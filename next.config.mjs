@@ -19,7 +19,9 @@ const csp = [
   "default-src 'self'",
   "base-uri 'self'",
   "form-action 'self'",
-  "frame-ancestors 'none'",
+  // 'self', not 'none': /work embeds the /demo case studies in iframes, and
+  // 'none' refuses framing from every origin including this one.
+  "frame-ancestors 'self'",
   "object-src 'none'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
@@ -40,8 +42,9 @@ const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
   { key: "X-Content-Type-Options", value: "nosniff" },
   // Redundant with frame-ancestors for modern browsers, and the thing older
-  // ones and most scanners actually look for.
-  { key: "X-Frame-Options", value: "DENY" },
+  // ones and most scanners actually look for. SAMEORIGIN rather than DENY for
+  // the same reason: DENY blocks the /work embeds too.
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",

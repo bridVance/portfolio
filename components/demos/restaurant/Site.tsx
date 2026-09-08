@@ -40,12 +40,15 @@ export function Site() {
   const [step, setStep] = useState(1);
   const [size, setSize] = useState<number | null>(null);
   const [time, setTime] = useState<string | null>(null);
+  const [held, setHeld] = useState(false);
 
   return (
     <div className="rest min-h-screen">
       <style>{`
         .rest {
           --red: #DC2626;
+          /* Text on red: #FEF2F2 over #DC2626 is 4.41, just under. */
+          --red-deep: #B91C1C;
           --gold: #A16207;
           --ink: #450A0A;
           --paper: #FEF2F2;
@@ -75,11 +78,11 @@ export function Site() {
           <a href="#menu" className="hover:text-[var(--line)]">Menu</a>
           <a href="#book" className="hover:text-[var(--line)]">Book a table</a>
         </nav>
-        <a href="#book" className="bg-[var(--red)] px-5 py-2 text-sm">Book</a>
+        <a href="#book" className="bg-[var(--red-deep)] px-5 py-2 text-sm text-white">Book</a>
       </header>
 
       {/* Hero block */}
-      <section className="bg-[var(--red)] px-5 py-16 text-[var(--paper)] md:py-24">
+      <section className="bg-[var(--red-deep)] px-5 py-16 text-[var(--paper)] md:py-24">
         <div className="mx-auto max-w-5xl">
           <h1 className="max-w-[16ch] text-[clamp(2.75rem,8vw,5.5rem)] leading-[0.98]">
             Kerala cooking, without the buffet.
@@ -223,13 +226,31 @@ export function Site() {
                 name and a number here &mdash; this is a portfolio demo, so
                 nothing was reserved and nothing was collected.
               </p>
+              {held ? (
+                <output className="mt-6 block border-2 border-[var(--gold)] p-4">
+                  <span className="display block text-xl">Table held for 15 minutes</span>
+                  <span className="mt-1 block text-sm text-[var(--muted)]">
+                    Demo &mdash; nothing was reserved.
+                  </span>
+                </output>
+              ) : null}
               <div className="mt-6 flex flex-wrap gap-3">
-                <button type="button" className="bg-[var(--red)] px-7 py-3 text-sm text-white">
-                  Confirm
+                <button
+                  type="button"
+                  onClick={() => setHeld(true)}
+                  disabled={held}
+                  className="bg-[var(--red-deep)] px-7 py-3 text-sm text-white disabled:opacity-45"
+                >
+                  {held ? "Held" : "Confirm"}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setStep(1)}
+                  onClick={() => {
+                    setStep(1);
+                    setHeld(false);
+                    setSize(null);
+                    setTime(null);
+                  }}
                   className="border-2 border-[var(--ink)] px-7 py-3 text-sm"
                 >
                   Start again
