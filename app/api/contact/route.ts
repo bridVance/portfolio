@@ -15,6 +15,46 @@ export const runtime = "nodejs";
 
 const MAX = { name: 120, email: 200, message: 4000 };
 
+/**
+ * Text the enquiry to the studio phone.
+ *
+ * CONTACT_PHONE is read here and nowhere else. It has no NEXT_PUBLIC_ prefix,
+ * so Next refuses to inline it into any client bundle, and this module is a
+ * route handler that never ships to the browser — the number cannot reach a
+ * page, a bundle or the DOM. A test asserts that.
+ *
+ * Twilio because one authenticated POST covers both SMS and WhatsApp: prefix
+ * TWILIO_FROM and CONTACT_PHONE with `whatsapp:` and the same call delivers
+ * there instead. Unconfigured, this is a no-op — the email is the path that
+ * must work, and a missing SMS key should never lose an enquiry.
+ */
+async function textTheStudio(summary: string): Promise<boolean> {
+  const sid = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  const from = process.env.TWILIO_FROM;
+  const to = process.env.CONTACT_PHONE;
+  if (!sid || !token || !from || !to) return false;
+
+  try {
+    const res = await fetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Basic ${Buffer.from(`${sid}:${token}`).toString("base64")}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ From: from, To: to, Body: summary }),
+      }
+    );
+    return res.ok;
+  } catch {
+    // The email already carries the enquiry; a failed text must not fail the
+    // request or the sender is told their message did not land when it did.
+    return false;
+  }
+}
+
 type Body = { name?: unknown; email?: unknown; message?: unknown; company?: unknown };
 
 export async function POST(request: Request) {
@@ -80,5 +120,12 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  // Fired after the email is confirmed, and deliberately not awaited into the
+  // result: the enquiry is already safe, so a slow or failing SMS provider
+  // should not hold up the reply or turn a delivered message into an error.
+  const texted = await textTheStudio(
+    `New enquiry from ${name} (${email})\n\n${message.slice(0, 900)}`
+  );
+
+  return NextResponse.json({ ok: true, texted });
 }

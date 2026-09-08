@@ -24,7 +24,17 @@ test("sauce: cart adds, totals, closes and reaches the demo step", async ({ page
   // Two of a 420 bottle: 840 subtotal, 42 GST, 90 delivery under the threshold.
   await page.getByRole("button", { name: /one more smoked chilli/i }).click();
   await expect(cart).toContainText("₹840");
-  await expect(cart).toContainText("₹972");
+
+  // Five per item per order, enforced where quantity changes rather than only
+  // on the button — a cart reached 14 of one sauce before this.
+  const more = cart.getByRole("button", { name: /one more smoked chilli/i });
+  for (let i = 0; i < 8; i++) if (await more.isEnabled()) await more.click();
+  await expect(cart).toContainText(/max 5 per order/i);
+  await expect(more).toBeDisabled();
+  await expect(cart).toContainText("₹2,100"); // 5 x 420, not more
+
+  await cart.getByRole("button", { name: /one fewer smoked chilli/i }).click();
+  await expect(more).toBeEnabled();
 
   await cart.getByRole("button", { name: "Checkout" }).click();
   await expect(cart).toContainText(/nothing was charged/i);
@@ -51,6 +61,11 @@ test("dates: pack size repriced, basket opens, closes and counts", async ({ page
 
   await basket.getByRole("button", { name: /one more medjool/i }).click();
   await expect(basket).toContainText("₹4,608");
+
+  const moreDates = basket.getByRole("button", { name: /one more medjool/i });
+  for (let i = 0; i < 8; i++) if (await moreDates.isEnabled()) await moreDates.click();
+  await expect(moreDates).toBeDisabled();
+  await expect(basket).toContainText(/max 5/i);
 
   await basket.getByRole("button", { name: "Close" }).click();
   await expect(basket).toBeHidden();
@@ -82,6 +97,17 @@ test("distributor: tier applies, credit blocks, order submits", async ({ page })
   await type("4800");
   await expect(page.getByText(/over your available credit/i)).toBeVisible();
   await expect(page.getByRole("button", { name: "Submit order" })).toBeDisabled();
+
+  // A quantity beyond stock must be impossible to enter, not merely flagged:
+  // 24,852 against 620 in stock priced at sixteen crore before this.
+  const tamarind = page.getByLabel(/quantity of tamarind paste/i);
+  await tamarind.click();
+  await tamarind.pressSequentially("24852");
+  await expect(tamarind).toHaveValue("620");
+  await expect(page.getByText(/all 620 in stock/i).first()).toBeVisible();
+  await tamarind.press("ControlOrMeta+a");
+  await tamarind.pressSequentially("120");
+  await expect(tamarind).toHaveValue("120");
 
   await type("60");
   await page.getByRole("button", { name: "Submit order" }).click();

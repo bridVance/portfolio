@@ -195,15 +195,37 @@ export function Portal() {
                           id={`q-${p.sku}`}
                           type="number"
                           min={0}
+                          max={p.stock}
                           step={p.pack}
                           disabled={out}
                           value={q || ""}
                           placeholder="0"
+                          aria-describedby={q >= p.stock ? `stock-${p.sku}` : undefined}
+                          // Clamped on the way in, so a quantity larger than
+                          // the stock cannot be entered at all. `max` alone
+                          // does not do this: the browser will happily accept
+                          // a typed value above it and only complain on submit,
+                          // which is how 24,852 units of a 620-unit line came
+                          // to be priced at sixteen crore.
                           onChange={(e) =>
-                            setQty((s) => ({ ...s, [p.sku]: Number(e.target.value) || 0 }))
+                            setQty((s) => ({
+                              ...s,
+                              [p.sku]: Math.max(
+                                0,
+                                Math.min(Number(e.target.value) || 0, p.stock)
+                              ),
+                            }))
                           }
                           className="w-24 rounded-md border border-[var(--line)] bg-white px-2.5 py-1.5 tabular-nums disabled:cursor-not-allowed disabled:bg-[var(--paper)] disabled:text-[var(--muted)]"
                         />
+                        {q >= p.stock && p.stock > 0 ? (
+                          <span
+                            id={`stock-${p.sku}`}
+                            className="mt-1 block text-xs text-[var(--muted)]"
+                          >
+                            All {p.stock} in stock
+                          </span>
+                        ) : null}
                       </td>
                       <td className="px-4 py-3">
                         <span

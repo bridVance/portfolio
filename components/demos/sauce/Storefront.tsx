@@ -29,6 +29,11 @@ const PRODUCTS = [
   { id: "beet", name: "Beet & Horseradish", note: "Beetroot, horseradish, dill", heat: 2, price: 400 },
 ] as const;
 
+// Small-batch stock, so a single order cannot take more than five of anything.
+// Enforced where quantity changes rather than only on the button, so the cap
+// holds however the number got there.
+const MAX_PER_ITEM = 5;
+
 const FREE_SHIPPING_OVER = 1500;
 const SHIPPING = 90;
 const GST_RATE = 0.05; // packaged food
@@ -64,7 +69,7 @@ export function Storefront() {
   }, [lines]);
 
   const add = useCallback((id: string) => {
-    setLines((l) => ({ ...l, [id]: (l[id] ?? 0) + 1 }));
+    setLines((l) => ({ ...l, [id]: Math.min((l[id] ?? 0) + 1, MAX_PER_ITEM) }));
     setCartOpen(true);
   }, []);
 
@@ -72,7 +77,7 @@ export function Storefront() {
     setLines((l) => {
       const next = { ...l };
       if (qty <= 0) delete next[id];
-      else next[id] = qty;
+      else next[id] = Math.min(qty, MAX_PER_ITEM);
       return next;
     });
   }, []);
@@ -349,11 +354,17 @@ export function Storefront() {
                     <button
                       type="button"
                       onClick={() => setQty(i.id, i.qty + 1)}
-                      className="h-7 w-7 border-2 border-[var(--ink)]"
+                      disabled={i.qty >= MAX_PER_ITEM}
+                      className="h-7 w-7 border-2 border-[var(--ink)] disabled:opacity-35"
                       aria-label={`One more ${i.name}`}
                     >
                       +
                     </button>
+                    {i.qty >= MAX_PER_ITEM ? (
+                      <span className="text-xs text-[var(--muted)]">
+                        Max {MAX_PER_ITEM} per order
+                      </span>
+                    ) : null}
                   </div>
                 </li>
               ))}

@@ -30,6 +30,10 @@ const VARIETIES = [
   { id: "barhi", name: "Barhi", origin: "Basra", note: "Fresh, crisp, seasonal", base: 980, tone: "#B98A2E" },
 ] as const;
 
+// Same five-per-line cap as the other storefront: these are graded by hand
+// and a single order should not clear a variety.
+const MAX_PER_LINE = 5;
+
 const rupees = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
 export function Store() {
@@ -199,7 +203,10 @@ export function Store() {
                     type="button"
                     onClick={() => {
                       const key = `${v.id}|${weight}`;
-                      setBasket((b) => ({ ...b, [key]: (b[key] ?? 0) + 1 }));
+                      setBasket((b) => ({
+                        ...b,
+                        [key]: Math.min((b[key] ?? 0) + 1, MAX_PER_LINE),
+                      }));
                       setBasketOpen(true);
                     }}
                     className="rounded-full border border-[var(--stone)] px-4 py-2 text-sm transition-colors hover:bg-[var(--stone)] hover:text-white"
@@ -371,13 +378,22 @@ export function Store() {
                     <button
                       type="button"
                       aria-label={`One more ${l.name} ${l.size}`}
+                      disabled={l.qty >= MAX_PER_LINE}
                       onClick={() =>
-                        setBasket((b) => ({ ...b, [l.key]: (b[l.key] ?? 0) + 1 }))
+                        setBasket((b) => ({
+                          ...b,
+                          [l.key]: Math.min((b[l.key] ?? 0) + 1, MAX_PER_LINE),
+                        }))
                       }
-                      className="h-7 w-7 rounded-full border border-[var(--line)]"
+                      className="h-7 w-7 rounded-full border border-[var(--line)] disabled:opacity-35"
                     >
                       +
                     </button>
+                    {l.qty >= MAX_PER_LINE ? (
+                      <span className="text-xs text-[var(--muted)]">
+                        Max {MAX_PER_LINE}
+                      </span>
+                    ) : null}
                   </div>
                 </li>
               ))}
