@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { freshCaller } from "./support";
 
 // The studio phone number must never reach a browser.
 //
@@ -61,20 +62,35 @@ test("the contact API never echoes the number back", async ({ request }) => {
 
   for (const payload of [
     { name: "", email: "bad", message: "" },
-    { name: "Asha", email: "asha@example.com", message: "Hello" },
+    // Trips the honeypot, so it takes the success path's response without
+    // spending an email. Any of these bodies would do; what is being checked
+    // is that none of them come back carrying the number.
+    { name: "Asha", email: "asha@example.com", message: "Hello", company: "bot" },
   ]) {
-    const res = await request.post("/api/contact", { data: payload });
+    const res = await request.post("/api/contact", {
+      data: payload,
+      headers: freshCaller(),
+    });
     const body = await res.text();
     expect(body).not.toMatch(INDIAN_MOBILE);
     if (configured) expect(body.replace(/\D/g, "")).not.toContain(configured);
   }
 });
 
-test("every enquiry is addressed to the studio inbox", async ({ page, request }) => {
+test("every enquiry is addressed to the studio inbox", async ({ page, request }, testInfo) => {
   // The destination is a constant with an env override. A typo in either would
   // send enquiries somewhere nobody reads, and nothing else would notice.
+  //
+  // This is the one request in the suite that really sends when a provider key
+  // is configured, so it runs on a single project rather than all five — the
+  // studio inbox is read for actual leads, and five test enquiries a run is a
+  // cost the other four projects add nothing for. The name says what it is.
+  const live = testInfo.project.name === "chromium-desktop";
   const res = await request.post("/api/contact", {
-    data: { name: "Asha", email: "asha@example.com", message: "Hello" },
+    data: live
+      ? { name: "Playwright suite", email: "suite@example.com", message: "Automated check." }
+      : { name: "Asha", email: "asha@example.com", message: "Hello", company: "bot" },
+    headers: freshCaller(),
   });
   const body = await res.json();
 

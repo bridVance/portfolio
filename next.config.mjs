@@ -40,6 +40,13 @@ const csp = [
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
+  // Vercel adds this on *.vercel.app, which is also HSTS-preloaded — but a
+  // custom domain gets neither for free, and the day one is attached is not
+  // the day to remember a header. Ignored over plain http, so dev is unaffected.
+  {
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
+  },
   { key: "X-Content-Type-Options", value: "nosniff" },
   // Redundant with frame-ancestors for modern browsers, and the thing older
   // ones and most scanners actually look for. SAMEORIGIN rather than DENY for

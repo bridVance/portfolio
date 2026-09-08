@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import { CONTACT } from "@/lib/contact";
 
 type Errors = Partial<Record<"name" | "email" | "message", string>>;
-type State = "idle" | "sending" | "sent" | "failed";
+type State = "idle" | "sending" | "sent" | "failed" | "limited";
 
 const field =
   "mt-2 w-full rounded-lg border border-line bg-surface px-3 py-2.5 font-body text-fg " +
@@ -35,6 +35,7 @@ export function ContactForm() {
   const [state, setState] = useState<State>("idle");
   const [errors, setErrors] = useState<Errors>({});
   const [draft, setDraft] = useState({ name: "", email: "", message: "" });
+  const [retryAfter, setRetryAfter] = useState(0);
   const statusRef = useRef<HTMLOutputElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const listed = Object.entries(errors) as [keyof Errors, string][];
@@ -73,6 +74,14 @@ export function ContactForm() {
       if (payload.errors) {
         setErrors(payload.errors);
         setState("idle");
+      } else if (res.status === 429) {
+        // Being told "that did not send" reads as a fault to fix and invites
+        // the retry the limit is there to stop. Say what happened instead, and
+        // keep the mail-app route open — a real sender is not the reason the
+        // limit tripped and should not be made to wait.
+        setRetryAfter(Number(payload.retryAfter) || 0);
+        setState("limited");
+        statusRef.current?.focus();
       } else {
         setState("failed");
         statusRef.current?.focus();
@@ -189,7 +198,20 @@ export function ContactForm() {
           {state === "sending" ? "Sending…" : "Send enquiry"}
         </button>
         <output ref={statusRef} tabIndex={-1} className="font-body text-sm text-muted">
-          {state === "failed" ? (
+          {state === "limited" ? (
+            <>
+              That is more enquiries than we take from one place at a time.
+              {retryAfter ? ` Try again in ${Math.ceil(retryAfter / 60)} min` : " Try again shortly"}
+              , or{" "}
+              <a
+                className="font-medium text-fg underline underline-offset-4"
+                href={mailtoFor(CONTACT.email, draft)}
+              >
+                send it from your mail app
+              </a>{" "}
+              now &mdash; we have filled it in already.
+            </>
+          ) : state === "failed" ? (
             <>
               That did not send.{" "}
               <a
