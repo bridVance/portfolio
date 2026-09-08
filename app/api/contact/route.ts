@@ -203,6 +203,15 @@ ${message}`,
   });
 
   if (!res.ok) {
+    // The provider's reason is the only thing that explains a failed send, and
+    // throwing it away made a 502 undiagnosable from outside — a wrong key in
+    // the dashboard and a rejected recipient look identical from here. Logged
+    // server-side, so it reaches the platform's function log and never the
+    // sender, whose problem it is not.
+    console.error(
+      `contact: provider refused the send (${res.status})`,
+      await res.text().catch(() => "<no body>")
+    );
     // Never pretend an enquiry landed. The client shows the address instead.
     return NextResponse.json(
       { error: "send-failed", email: CONTACT.email },
